@@ -1,1 +1,5 @@
 Flask
+Flask==3.0.0
+Flask-Session==0.8.0
+bcrypt==4.1.2
+plotly==5.19.0
