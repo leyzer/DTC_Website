@@ -20,7 +20,7 @@ def league():
 
             # Load base data
             users = cursor.execute(
-                "SELECT user_id AS id, user_name AS full_name FROM users ORDER BY user_name"
+                "SELECT user_id AS id, user_name, full_name FROM users ORDER BY user_name"
             ).fetchall()
 
             systems = cursor.execute(

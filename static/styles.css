@@ -248,8 +248,15 @@ nav .navbar-brand .red {
 .form-check-label {
     cursor: pointer;
     font-weight: 500;
+    margin-left: 0.5rem;   
+}
+html .form-check-label {
+    cursor: pointer;
+    font-weight: 500;
     margin-left: 0.5rem;
 }
+
+
 
 
 /* Tables */
