@@ -68,62 +68,63 @@ INSERT INTO elo_rules (elo_rule_id, category, points_band, base_rating, k_factor
 -- Factions
 -- ===========================
 INSERT INTO factions (faction_id, system_id, faction_name) VALUES
-1           1          Cities of Sigmar
-2           1          Daughters of Khaine
-3           1          Fyreslayers
-4           1          Idoneth Deepkin
-5           1          Kharadron Overlords   
-6           1          Lumineth Realm-Lords
-7           1          Seraphon
-8           1          Stormcast Eternals
-9           1          Sylvaneth
-10          1          Flesh-eater Courts
-11          1          Nighthaunt
-12          1          Ossiarch Bonereapers
-13          1          Soulblight Gravelords
-14          1          Blades of Khorne
-15          1          Disciples of Tzeentch
-16          1          Hedonites of Slaanesh
-17          1          Helsmiths of Hashut
-18          1          Maggotkin of Nurgle
-19          1          Skaven
-20          1          Slaves to Darkness
-21          1          Gloomspite Gitz
-22          1          Ogor Mawtribes
-23          1          Orruk Warclans
-24          1          Sons of Behemat
-25          2          Space Marines
-26          2          Black Templars
-27          2          Blood Angels
-28          2          Dark Angels
-29          2          Deathwatch
-30          2          Grey Knights
-31          2          Imperial Fists
-32          2          Iron Hands
-33          2          Raven Guard
-34          2          Salamanders
-35          2          Space Wolves
-36          2          Ultramarines
-37          2          White Scars
-38          2          Adepta Sororitas
-39          2          Adeptus Custodes
-40          2          Adeptus Mechanicus
-41          2          Astra Militarum
-42          2          Imperial Agents
-43          2          Imperial Knights
-44          2          Chaos Daemons
-45          2          Chaos Knights
-46          2          Chaos Space Marines
-47          2          Death Guard
-48          2          Emperor's Children
-49          2          Thousand Sons
-50          2          World Eaters
-51          2          Aeldari
-52          2          Drukhari
-53          2          Genestealer Cults
-54          2          Leagues of Votann
-55          2          Necrons
-56          2          Orks
-57          2          Tau Empire
-58          2          Tyranids
+  (1, 1, 'Cities of Sigmar'),
+  (2, 1, 'Daughters of Khaine'),
+  (3, 1, 'Fyreslayers'),
+  (4, 1, 'Idoneth Deepkin'),
+  (5, 1, 'Kharadron Overlords'),
+  (6, 1, 'Lumineth Realm-Lords'),
+  (7, 1, 'Seraphon'),
+  (8, 1, 'Stormcast Eternals'),
+  (9, 1, 'Sylvaneth'),
+  (10, 1, 'Flesh-eater Courts'),
+  (11, 1, 'Nighthaunt'),
+  (12, 1, 'Ossiarch Bonereapers'),
+  (13, 1, 'Soulblight Gravelords'),
+  (14, 1, 'Blades of Khorne'),
+  (15, 1, 'Disciples of Tzeentch'),
+  (16, 1, 'Hedonites of Slaanesh'),
+  (17, 1, 'Helsmiths of Hashut'),
+  (18, 1, 'Maggotkin of Nurgle'),
+  (19, 1, 'Skaven'),
+  (20, 1, 'Slaves to Darkness'),
+  (21, 1, 'Gloomspite Gitz'),
+  (22, 1, 'Ogor Mawtribes'),
+  (23, 1, 'Orruk Warclans'),
+  (24, 1, 'Sons of Behemat'),
+  (25, 2, 'Space Marines'),
+  (26, 2, 'Black Templars'),
+  (27, 2, 'Blood Angels'),
+  (28, 2, 'Dark Angels'),
+  (29, 2, 'Deathwatch'),
+  (30, 2, 'Grey Knights'),
+  (31, 2, 'Imperial Fists'),
+  (32, 2, 'Iron Hands'),
+  (33, 2, 'Raven Guard'),
+  (34, 2, 'Salamanders'),
+  (35, 2, 'Space Wolves'),
+  (36, 2, 'Ultramarines'),
+  (37, 2, 'White Scars'),
+  (38, 2, 'Adepta Sororitas'),
+  (39, 2, 'Adeptus Custodes'),
+  (40, 2, 'Adeptus Mechanicus'),
+  (41, 2, 'Astra Militarum'),
+  (42, 2, 'Imperial Agents'),
+  (43, 2, 'Imperial Knights'),
+  (44, 2, 'Chaos Daemons'),
+  (45, 2, 'Chaos Knights'),
+  (46, 2, 'Chaos Space Marines'),
+  (47, 2, 'Death Guard'),
+  (48, 2, 'Emperor''s Children'),
+  (49, 2, 'Thousand Sons'),
+  (50, 2, 'World Eaters'),
+  (51, 2, 'Aeldari'),
+  (52, 2, 'Drukhari'),
+  (53, 2, 'Genestealer Cults'),
+  (54, 2, 'Leagues of Votann'),
+  (55, 2, 'Necrons'),
+  (56, 2, 'Orks'),
+  (57, 2, 'Tau Empire'),
+  (58, 2, 'Tyranids');
+
 
