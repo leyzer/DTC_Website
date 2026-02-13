@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Player Stats
+{% endblock %}
+
+{% block main %}
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Player Statistics</h5>
+        </div>
+        <div class="card-body">
+            <form id="playerForm" action="{{ url_for('stats.playerstats') }}" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="myPlayer" class="form-label">Select Player</label>
+                        <select id="myPlayer" name="player" class="form-select" required>
+                            {% for user in users %}
+                                <option value="{{ user.user_id }}" {% if user.user_id == active.user_id %}selected{% endif %}>
+                                    {{ user.user_name|title }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="mySelect" class="form-label">Select Year</label>
+                        <select id="mySelect" name="year" class="form-select">
+                            <option value="All" {% if selected_year == 'All' %}selected{% endif %}>All</option>
+                            {% for row in years %}
+                            <option value="{{row[0]}}" {% if row[0] == selected_year %}selected{% endif %}>{{row[0]}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">View Stats</button>
+            </form>
+        </div>
+    </div>
+
+    {% if active %}
+    <h3 class="mb-4">Stats for {{ active.user_name|title }} ({{ selected_year }})</h3>
+    {% endif %}
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    {% for system, system_factions in factions.items() %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">{{ system }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Faction</th>
+                                <th class="text-center">Games</th>
+                                <th class="text-center text-success">Wins</th>
+                                <th class="text-center text-danger">Losses</th>
+                                <th class="text-center text-info">Draws</th>
+                                <th class="text-center">Battle Ready</th>
+                            </tr>
+                        </thead>
+                        <tbody>                     
+                            {% for faction, stats in system_factions.items() %}               
+                                <tr>                                
+                                    <td><strong>{{ faction }}</strong></td>
+                                    <td class="text-center">{{ stats.games }}</td>
+                                    <td class="text-center text-success">{{ stats.wins }}</td>
+                                    <td class="text-center text-danger">{{ stats.losses }}</td>
+                                    <td class="text-center text-info">{{ stats.draws }}</td>
+                                    <td class="text-center">{{ stats.battle_ready }}</td>
+                                </tr>                            
+                            {% endfor %} 
+                        </tbody>
+                    </table>
+                </div>
+
+                <details class="mt-3">
+                    <summary class="btn btn-sm btn-outline-secondary">📊 Show Games Played Graph</summary>
+                    <div class="mt-3">
+                        <div id="graph-{{ loop.index }}" style="width:100%;max-width:700px;margin:0 auto;"></div>
+                        <script>
+                            var graph_data = {{ graphs[system]|safe }};
+                            Plotly.newPlot('graph-{{ loop.index }}', graph_data.data, graph_data.layout);
+                        </script>
+                    </div>
+                </details>
+            </div>
+        </div>
+    {% endfor %}
+
+    {% if not factions %}
+        <div class="alert alert-info mt-4">
+            No game data available for this player and season.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

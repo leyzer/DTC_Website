@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+{% block title %}Manage Users{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <h2>Manage Users</h2>
+            
+            <!-- Create New User Card -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Create New User</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('admin.manage_users') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                            <small class="form-text text-muted">Lowercase, no spaces</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fullname" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create User</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Existing Users Table -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Existing Users ({{ users|length }})</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if users %}
+                                {% for user in users %}
+                                <tr>
+                                    <td><code>{{ user.user_name }}</code></td>
+                                    <td>{{ user.full_name }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        {% if user.is_provisional %}
+                                            <span class="badge bg-warning text-dark">Provisional</span>
+                                        {% else %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('admin.reset_temp_password', user_id=user.user_id) }}" class="btn btn-sm btn-warning" title="Set temporary password">
+                                            🔑 Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">No users found</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Sidebar -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">How It Works</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Creating Users:</h6>
+                    <ol class="small">
+                        <li>Enter user details above</li>
+                        <li>A temporary password is generated</li>
+                        <li>Share username and temp password with user</li>
+                    </ol>
+                    
+                    <hr>
+                    
+                    <h6>User Claiming:</h6>
+                    <ol class="small">
+                        <li>User goes to "Claim Account" link</li>
+                        <li>Enters username and temporary password</li>
+                        <li>Sets their own permanent password</li>
+                        <li>Account is now active</li>
+                    </ol>
+
+                    <hr>
+
+                    <div class="alert alert-info small mb-0">
+                        <strong>Note:</strong> Share the temporary password securely. Users should claim their account immediately to set a strong password.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

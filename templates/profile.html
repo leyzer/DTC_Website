@@ -1,0 +1,83 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- User Info Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Profile</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Username</label>
+                        <p class="mb-0"><code>{{ user.user_name }}</code></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Full Name</label>
+                        <p class="mb-0">{{ user.full_name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Email Address</label>
+                        <p class="mb-0">{{ user.email }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Member Since</label>
+                        <p class="mb-0">{{ user.created_at }}</p>
+                    </div>
+                    <hr>
+                    <a href="{{ url_for('auth.reset_password') }}" class="btn btn-secondary">Change Password</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Panel (if user is admin) -->
+        {% if is_user_admin %}
+        <div class="col-lg-6 mb-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">⚙️ Admin Panel</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Current Season: <strong>{{ CURRENT_YEAR }}</strong></p>
+                    
+                    <div class="mb-3">
+                        <label for="admin-select" class="form-label">Manage User Roles</label>
+                        <form method="post" action="{{ url_for('main.profile') }}" id="adminForm">
+                            <div class="input-group mb-2">
+                                <select name="admin" id="admin-select" class="form-select" required>
+                                    <option value="" disabled selected>Select user...</option>
+                                    {% for u in users_list %}
+                                        <option value="{{ u.user_id }}" {% if u.is_admin %}style="color: #28a745; font-weight: bold;"{% endif %}>
+                                            {{ u.user_name }} ({{ u.full_name }})
+                                            {% if u.is_admin %}✓ Admin{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('Change admin status for this user?')">
+                                Toggle Admin Rights
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <a href="{{ url_for('main.home') }}?year={{ CURRENT_YEAR }}" class="btn btn-sm btn-secondary w-100 mb-2">
+                        View Current Season
+                    </a>
+                    <a href="{{ url_for('auth.endseason') }}" class="btn btn-sm btn-danger w-100">
+                        End Season
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    login
+{% endblock %}
+
+{% block main %}
+<div class="container">
+	<div class="row justify-content-center mt-5">
+		<div class="col-md-4">
+			<div class="card">
+				<div class="card-body p-4">
+					<h3 class="card-title text-center mb-4">Log In</h3>
+					<form action="{{ url_for('auth.login') }}" method="post">
+						<div class="mb-3">
+							<input autocomplete="off" autofocus class="form-control" id="username" name="username" placeholder="Username" type="text" required>
+						</div>
+						<div class="mb-3">
+							<input autocomplete="off" class="form-control" id="password" name="password" placeholder="Password" type="password" required>
+						</div>
+						<button class="btn btn-primary w-100" type="submit">Log In</button>
+					</form>
+
+					<hr>
+
+					<div class="text-center small">
+						<p class="mb-2">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+						<p class="mb-0">Admin created an account for you? <a href="{{ url_for('auth.claim_account') }}">Claim it here</a></p>
+					</div>
+					<div class="alert alert-info mt-3 mb-0">
+						<small>If you forgot your password, please contact an administrator.</small>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

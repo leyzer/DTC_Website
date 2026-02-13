@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Result
+{% endblock %}
+
+{% block main %}
+
+<div class="table table-dark">
+<div class="center-container">
+    
+    <div class="solid">
+        <form action="{{ url_for('leagues.league') }}" method="post">
+            <div>
+                Game System
+                <select name="system" required>
+                    <option disabled>Select game system</option>
+                    {% for system in systems %}
+                        <option value="{{ system[0] }}" {% if system[0]|string == selected_system_id %}selected{% endif %}>{{ system[1] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div>
+                <label for="date">Date:</label>
+                <input type="datetime-local" id="datepicker" name="date" 
+           value="{{ today }}" required>
+
+            </div>    
+            <br>
+            <div>
+                Location
+                <select name="location" required>
+                    <option disabled selected>Select location</option>
+                    {% for loc in locations %}
+                        <option value="{{ loc['location_id'] }}">{{ loc['name'] }} ({{ loc['location_type'] }}, {{ loc['city'] }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div>
+                Points Band
+                <select name="points_band" required>
+                    <option disabled selected>Select points band</option>
+                    {% for band in points_bands %}
+                        <option value="{{ band[0] }}">{{ band[0] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <div>
+                <textarea name="notes" placeholder="Notes (optional)"></textarea>
+            </div>
+            <br>
+            <div class="edge">
+                <label for="player_one">Player One</label>
+                <select name="player_one" id="player_one" class="form-select" required>
+                    <option disabled selected>Select Player One</option>
+                    {% for user in users %}
+                        <option value="{{ user['id'] }}">{{ user['full_name']|title }}</option>
+                    {% endfor %}
+                </select>
+
+
+                <label for="p1_faction">Faction</label>
+                <select name="p1_faction" id="p1_faction" class="form-select" required>
+                    <option disabled selected>Select faction</option>
+                    {% for faction in factions %}
+                        <option value="{{ faction['id'] }}">{{ faction['faction_name'] }}</option>
+                    {% endfor %}
+                </select>
+
+
+                <div class="form-check">
+                    <input type="checkbox" id="p1_battle_ready" name="p1_battle_ready" class="form-check-input">
+                    <label for="p1_battle_ready" class="form-check-label">Battle Ready</label>
+                </div>
+            </div>
+        
+            <br>
+
+            <div class="edge">
+                <label for="player_two">Player Two</label>
+                <select name="player_two" id="player_two" class="form-select" required>
+                    <option disabled selected>Select Opponent</option>
+                    {% for user in users %}
+                        <option value="{{ user['id'] }}">{{ user['full_name']|title }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="p2_faction">Faction</label>
+                <select name="p2_faction" id="p2_faction" class="form-select" required>
+                    <option disabled selected>Select faction</option>
+                    {% for faction in factions %}
+                        <option value="{{ faction['id'] }}">{{ faction['faction_name'] }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="form-check">
+                    <input type="checkbox" id="p2_battle_ready" name="p2_battle_ready" class="form-check-input">
+                    <label for="p2_battle_ready" class="form-check-label">Battle Ready</label>
+                </div>
+            </div>
+
+            <div class="edge">
+                <label>Result</label>
+                <div class="btn-group" role="group" aria-label="Game Result">
+                    <input type="radio" class="btn-check" name="result" id="p1_win" value="Player 1 Wins" required>
+                    <label class="btn btn-outline-success" for="p1_win">Player 1 Wins</label>
+
+                    <input type="radio" class="btn-check" name="result" id="draw" value="Drawn">
+                    <label class="btn btn-outline-secondary" for="draw">Drawn</label>
+
+                    <input type="radio" class="btn-check" name="result" id="p2_win" value="Player 2 Wins">
+                    <label class="btn btn-outline-danger" for="p2_win">Player 2 Wins</label>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" type="submit">submit</button>
+        </form>   
+    </div>
+</div>
+</div>
+
+<script>
+document.querySelector('select[name="system"]').addEventListener('change', function() {
+    window.location.href = "{{ url_for('leagues.league') }}?system=" + this.value;
+});
+</script>
+
+{% endblock %}

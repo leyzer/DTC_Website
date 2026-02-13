@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row">
+        <!-- Club Memberships Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Club Memberships</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Manage player memberships for the club by season.</p>
+                    <form method="get" action="{{ url_for('admin.admin_club_memberships') }}" class="form-inline">
+                        <select name="season" class="form-select" onchange="this.form.submit()">
+                            <option value="" disabled selected>Select a season...</option>
+                            {% for s in seasons %}
+                                <option value="{{ s.year }}">{{ s.year }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Memberships Card -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">System Memberships</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">Manage player participation in game systems.</p>
+                    <select id="system" class="form-select" onchange="location = this.value;">
+                        <option value="" disabled selected>Select a system...</option>
+                        {% for sys in systems %}
+                            <option value="{{ url_for('admin.admin_system_memberships', system_id=sys.system_id) }}">
+                                {{ sys.system_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="row">
+        <div class="col-12">
+            <h4>Admin Functions</h4>
+            <div class="list-group">
+                <a href="{{ url_for('admin.manage_users') }}" class="list-group-item list-group-item-action">
+                    <strong>Manage Users</strong>
+                    <small class="d-block text-muted">Create new user accounts for players</small>
+                </a>
+                <a href="{{ url_for('admin.admin_club_memberships') }}" class="list-group-item list-group-item-action">
+                    <strong>Manage Club Memberships</strong>
+                    <small class="d-block text-muted">Add or remove club members by season</small>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action disabled">
+                    <strong>View System Memberships</strong>
+                    <small class="d-block text-muted">Select a system above to manage</small>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.card-header {
+    font-weight: 600;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+}
+
+.list-group-item {
+    border-left: 4px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.list-group-item:hover:not(.disabled) {
+    border-left-color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.form-inline select {
+    display: block;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "layout.html" %}
+{% block title %}System Memberships{% endblock %}
+
+{% block main %}
+<div class="mb-4">
+    <a href="{{ url_for('admin.admin_memberships_dashboard') }}" class="btn btn-secondary">← Back to Membership Dashboard</a>
+</div>
+
+<div class="membership-header mb-5">
+    <h1>{{ system_name }} Memberships</h1>
+    <p class="text-secondary">Manage which players are active members of this system</p>
+    <div class="d-flex align-items-center gap-3">
+        <span class="badge bg-primary fs-6">{{ players|length }} Total Players</span>
+        <span class="badge bg-success fs-6">{{ players|selectattr('is_active')|list|length }} Active Members</span>
+    </div>
+</div>
+
+<form method="post" action="{{ url_for('admin.update_system_memberships', system_id=system_id) }}" id="membershipForm">
+    <!-- Search/Filter -->
+    <div class="mb-4">
+        <input type="text"
+               class="form-control form-control-lg"
+               placeholder="Search players..."
+               id="playerSearch"
+               aria-label="Search players">
+        <small class="text-secondary">Type to filter players by name</small>
+    </div>
+
+    <!-- Member Cards Grid -->
+    <div class="membership-grid" id="membershipGrid">
+        {% for player in players %}
+        <div class="membership-card-wrapper" data-player-name="{{ player.user_name|lower }}">
+            <div class="membership-card {% if player.is_active %}active-member{% else %}inactive-member{% endif %}">
+                <!-- Status Indicator -->
+                <div class="member-card-header">
+                    <div class="member-status-indicator">
+                        {% if player.is_active %}
+                        <span class="badge bg-success">
+                            <i class="bi bi-check-circle"></i> Active
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary">
+                            <i class="bi bi-circle"></i> Not Member
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="member-card-body">
+                    <label class="member-checkbox-label">
+                        <input type="checkbox"
+                               class="member-checkbox"
+                               name="members[]"
+                               value="{{ player.user_id }}"
+                               {% if player.is_active %}checked{% endif %}>
+                        <span class="player-name">{{ player.user_name }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- No Results Message -->
+    <div id="noResultsMessage" class="alert alert-info d-none" role="alert">
+        <i class="bi bi-search"></i> No players match your search. Try a different name.
+    </div>
+
+    <!-- Submit Section -->
+    <div class="membership-footer mt-5 pt-4 border-top">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="bi bi-save"></i> Update {{ system_name }} Memberships
+        </button>
+        <button type="reset" class="btn btn-outline-secondary btn-lg ms-2">
+            <i class="bi bi-arrow-counterclockwise"></i> Reset
+        </button>
+    </div>
+</form>
+
+<!-- JavaScript for Search/Filter -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('playerSearch');
+    const membershipCards = document.querySelectorAll('.membership-card-wrapper');
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    const grid = document.getElementById('membershipGrid');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            membershipCards.forEach(card => {
+                const playerName = card.dataset.playerName;
+                const matches = playerName.includes(searchTerm);
+                card.style.display = matches ? '' : 'none';
+                if (matches) visibleCount++;
+            });
+
+            // Show/hide no results message
+            if (searchTerm && visibleCount === 0) {
+                noResultsMessage.classList.remove('d-none');
+                grid.style.display = 'none';
+            } else {
+                noResultsMessage.classList.add('d-none');
+                grid.style.display = '';
+            }
+        });
+    }
+
+    // Update card appearance when checkbox changes
+    document.querySelectorAll('.member-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.membership-card');
+            const statusIndicator = card.querySelector('.member-status-indicator');
+
+            if (this.checked) {
+                card.classList.remove('inactive-member');
+                card.classList.add('active-member');
+                statusIndicator.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Active</span>';
+            } else {
+                card.classList.remove('active-member');
+                card.classList.add('inactive-member');
+                statusIndicator.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-circle"></i> Not Member</span>';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
+

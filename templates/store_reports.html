@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block title %}Store Reports{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h3>Games Played by Store ({{ selected_year }})</h3>
+
+    <!-- Year filter -->
+    <form id="yearForm" action="{{ url_for('stats.store_reports') }}" method="POST">
+        <select id="yearSelect" name="year" class="form-select w-auto d-inline">
+            <option value="All" {% if selected_year == 'All' %}selected{% endif %}>All</option>
+            {% for season in years %}
+                <option value="{{ season.year }}" {% if season.year == selected_year %}selected{% endif %}>
+                    {{ season.year }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <!-- System filter -->
+    <form id="systemForm" action="{{ url_for('stats.store_reports') }}" method="GET">
+        <select id="systemSelect" name="system" class="form-select w-auto d-inline">
+            {% for system in systems %}
+                <option value="{{ system.system_id }}" {% if system.system_id|string == selected_system %}selected{% endif %}>
+                    {{ system.system_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <script>
+        document.getElementById('yearSelect').addEventListener('change', function() {
+            document.getElementById('yearForm').submit();
+        });
+        document.getElementById('systemSelect').addEventListener('change', function() {
+            document.getElementById('systemForm').submit();
+        });
+    </script>
+    {% if store_counts %}
+
+                <div class="mx-auto" style="max-width:600px;">
+                    <canvas id="storeChart"></canvas>
+                </div>
+
+
+                <!-- Table of raw counts -->
+                <div class="mt-4">
+                    <h4>Store Breakdown</h4>
+                    <table class="table table-striped table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th scope="col">Store</th>
+                                <th scope="col">Games Played</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in store_counts %}
+                            <tr>
+                                <td>{{ row.store_name }}</td>
+                                <td>{{ row.games_played }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                const ctx = document.getElementById('storeChart').getContext('2d');
+                const storeChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ labels|tojson }},
+                        datasets: [{
+                            label: 'Games Played',
+                            data: {{ values|tojson }},
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            </script>
+    {% else %}
+        <p class="text-muted">No games found for this selection.</p>
+    {% endif %}
+
+{% endblock %}
+

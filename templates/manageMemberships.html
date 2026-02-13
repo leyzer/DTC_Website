@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block title %}Manage Memberships{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <h2>Manage Club Memberships for Season {{ selected_year }}</h2>
+
+    <form method="get" action="{{ url_for('admin.manage_memberships') }}" id="seasonForm" class="mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="season" class="form-label">Select Season:</label>
+                <select name="season" id="season" class="form-select" onchange="this.form.submit()">
+                    {% for season in seasons %}
+                        <option value="{{ season[1] }}" {% if season[1] == selected_year %}selected{% endif %}>
+                            {{ season[1] }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Club Membership</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('admin.manage_memberships') }}">
+                <input type="hidden" name="season" value="{{ selected_year }}">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User</th>
+                                <th class="text-center" style="width: 100px;">Member?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user[1]|title }}</td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="members[]" value="{{ user[0] }}"
+                                           {% if user[2] == 1 %}checked{% endif %} class="form-check-input">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

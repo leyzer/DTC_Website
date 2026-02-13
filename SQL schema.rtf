@@ -1,0 +1,141 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fmodern Courier New;}{\f1\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;\red0\green0\blue0;\red128\green128\blue0;}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\cf1\b\f0\fs20 CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "elo_rules"\cf2  \cf1 (\par
+\cf2\tab\cf3 "elo_rule_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "category"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "points_band"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "base_rating"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "k_factor"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "elo_rule_id"\cf1 ),\par
+\cf2\tab\cf1\b UNIQUE\cf2\b0  \cf1\b INDEX\cf2\b0  \cf3 "sqlite_autoindex_elo_rules_1"\cf2  \cf1 (\cf3 "category"\cf1 ,\cf2  \cf3 "points_band"\cf1 )\par
+)\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "factions"\cf2  \cf1 (\par
+\cf2\tab\cf3 "faction_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "system_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "faction_name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "faction_id"\cf1 ),\par
+\cf2\tab\cf1\b UNIQUE\cf2\b0  \cf1\b INDEX\cf2\b0  \cf3 "sqlite_autoindex_factions_1"\cf2  \cf1 (\cf3 "system_id"\cf1 ,\cf2  \cf3 "faction_name"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "system_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "systems"\cf2  \cf1 (\cf3 "system_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "games"\cf2  \cf1 (\par
+\cf2\tab\cf3 "game_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "season_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "system_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "played_on"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "location_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "points_band"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "notes"\cf2  \cf3 TEXT\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "score"\cf2  \cf3 INTEGER\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "game_id"\cf1 ),\par
+\cf2\tab\cf1\b INDEX\cf2\b0  \cf3 "idx_games_system"\cf2  \cf1 (\cf3 "system_id"\cf1 ),\par
+\cf2\tab\cf1\b INDEX\cf2\b0  \cf3 "idx_games_season"\cf2  \cf1 (\cf3 "season_id"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "location_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "locations"\cf2  \cf1 (\cf3 "location_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b SET\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "1"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "system_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "systems"\cf2  \cf1 (\cf3 "system_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b RESTRICT\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "2"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "season_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "seasons"\cf2  \cf1 (\cf3 "season_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "game_participants"\cf2  \cf1 (\par
+\cf2\tab\cf3 "game_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "player_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "faction_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "result"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "painting_battle_ready"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "score_raw"\cf2  \cf3 INTEGER\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "game_id"\cf1 ,\cf2  \cf3 "player_id"\cf1 ),\par
+\cf2\tab\cf1\b INDEX\cf2\b0  \cf3 "idx_participants_faction"\cf2  \cf1 (\cf3 "faction_id"\cf1 ),\par
+\cf2\tab\cf1\b INDEX\cf2\b0  \cf3 "idx_participants_player"\cf2  \cf1 (\cf3 "player_id"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "faction_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "factions"\cf2  \cf1 (\cf3 "faction_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b SET\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "1"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "player_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "users"\cf2  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "2"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "game_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "games"\cf2  \cf1 (\cf3 "game_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "locations"\cf2  \cf1 (\par
+\cf2\tab\cf3 "location_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "location_type"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "city"\cf2  \cf3 TEXT\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "notes"\cf2  \cf3 TEXT\cf2  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "location_id"\cf1 )\par
+)\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "ratings"\cf2  \cf1 (\par
+\cf2\tab\cf3 "season_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "player_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "system_category"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "current_rating"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "games_played"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "season_id"\cf1 ,\cf2  \cf3 "player_id"\cf1 ,\cf2  \cf3 "system_category"\cf1 ),\par
+\cf2\tab\cf1\b INDEX\cf2\b0  \cf3 "idx_ratings_player"\cf2  \cf1 (\cf3 "player_id"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "player_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "users"\cf2  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "1"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "season_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "seasons"\cf2  \cf1 (\cf3 "season_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "rating_history"\cf2  \cf1 (\par
+\cf2\tab\cf3 "game_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "user_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "pre_rating"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "post_rating"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "k_factor_used"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "expected_score"\cf2  \cf3 REAL\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "actual_score"\cf2  \cf3 REAL\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "game_id"\cf1 ,\cf2  \cf3 "user_id"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "users"\cf2  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\b0 ,\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "1"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "game_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "games"\cf2  \cf1 (\cf3 "game_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "seasons"\cf2  \cf1 (\par
+\cf2\tab\cf3 "season_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "year"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "start_date"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "end_date"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "status"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "season_id"\cf1 )\par
+)\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "systems"\cf2  \cf1 (\par
+\cf2\tab\cf3 "system_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "system_code"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "system_name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "category"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "system_id"\cf1 ),\par
+\cf2\tab\cf1\b UNIQUE\cf2\b0  \cf1\b INDEX\cf2\b0  \cf3 "sqlite_autoindex_systems_1"\cf2  \cf1 (\cf3 "system_code"\cf1 )\par
+)\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "users"\cf2  \cf1 (\par
+\cf2\tab\cf3 "user_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "email"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "user_name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "password_hash"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "is_active"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "created_at"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "full_name"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "user_id"\cf1 ),\par
+\cf2\tab\cf1\b UNIQUE\cf2\b0  \cf1\b INDEX\cf2\b0  \cf3 "sqlite_autoindex_users_1"\cf2  \cf1 (\cf3 "email"\cf1 )\par
+)\par
+;\par
+\par
+\b CREATE\cf2\b0  \cf1\b TABLE\cf2\b0  \cf3 "user_roles"\cf2  \cf1 (\par
+\cf2\tab\cf3 "user_id"\cf2  \cf3 INTEGER\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf3 "role"\cf2  \cf3 TEXT\cf2  \cf1\b NOT\cf2\b0  \cf1\b NULL\b0 ,\par
+\cf2\tab\cf1\b PRIMARY\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "user_id"\cf1 ,\cf2  \cf3 "role"\cf1 ),\par
+\cf2\tab\cf1\b CONSTRAINT\cf2\b0  \cf3 "0"\cf2  \cf1\b FOREIGN\cf2\b0  \cf1\b KEY\cf2\b0  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf3 REFERENCES\cf2  \cf3 "users"\cf2  \cf1 (\cf3 "user_id"\cf1 )\cf2  \cf1\b ON\cf2\b0  \cf1\b UPDATE\cf2\b0  \cf1\b NO\cf2\b0  \cf1\b ACTION\cf2\b0  \cf1\b ON\cf2\b0  \cf1\b DELETE\cf2\b0  \cf1\b CASCADE\par
+\b0 )\par
+;\par
+\par
+
+\pard\sa200\sl276\slmult1\cf0\f1\fs22\lang9\par
+}
+ 

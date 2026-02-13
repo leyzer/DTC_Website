@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block title %}Club Memberships{% endblock %}
+
+{% block main %}
+<a href="{{ url_for('admin.admin_memberships_dashboard') }}" class="btn btn-secondary">← Back to Membership Dashboard</a>
+
+<div class="membership-header">
+    <div class="membership-title-section">
+        <h2>Club Memberships</h2>
+        <div class="membership-stats">
+            <span class="stat-badge">Total: <strong id="totalMembers">{{ club_users|length }}</strong></span>
+            <span class="stat-badge">Members: <strong id="activeMemberCount">{{ club_users|selectattr('is_member')|list|length }}</strong></span>
+        </div>
+    </div>
+</div>
+
+<form method="post" action="{{ url_for('admin.update_club_memberships') }}">
+    <input type="hidden" name="season" value="{{ selected_year }}">
+
+    <div class="membership-controls">
+        <div class="season-selector">
+            <label for="seasonSelect">Season:</label>
+            <select id="seasonSelect" name="season" class="form-control" style="width: auto;">
+                <!-- This would be populated with available seasons from the backend -->
+                <option selected>{{ selected_year }}</option>
+            </select>
+        </div>
+
+        <input type="text" id="playerSearch" class="form-control" placeholder="Search members..."
+               style="max-width: 300px;">
+    </div>
+
+    <div id="noResults" class="alert alert-info" style="display: none; margin-top: 1rem;">
+        No members match your search.
+    </div>
+
+    <div class="membership-grid" id="membershipGrid">
+        {% for user in club_users %}
+        <div class="membership-card-wrapper" data-player-name="{{ user.user_name|lower }}">
+            <div class="membership-card {% if user.is_member %}active-member{% else %}inactive-member{% endif %}">
+                <div class="member-card-header">
+                    <div class="member-status-indicator">
+                        {% if user.is_member %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Member</span>
+                        {% else %}
+                        <span class="badge bg-secondary"><i class="bi bi-circle"></i> Not Member</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="member-card-body">
+                    <label class="member-checkbox-label">
+                        <input type="checkbox" class="member-checkbox" name="members[]"
+                               value="{{ user.user_id }}" {% if user.is_member %}checked{% endif %}>
+                        <span class="player-name">{{ user.user_name }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="membership-footer">
+        <button type="submit" class="btn btn-primary">Update Club Memberships</button>
+        <a href="{{ url_for('admin.admin_memberships_dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('playerSearch');
+    const membershipCards = document.querySelectorAll('.membership-card-wrapper');
+    const noResultsMessage = document.getElementById('noResults');
+    const memberCheckboxes = document.querySelectorAll('.member-checkbox');
+    const activeMemberCount = document.getElementById('activeMemberCount');
+
+    // Search/filter functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            membershipCards.forEach(card => {
+                const playerName = card.dataset.playerName;
+                const matches = playerName.includes(searchTerm);
+                card.style.display = matches ? '' : 'none';
+                if (matches) visibleCount++;
+            });
+
+            noResultsMessage.style.display = visibleCount === 0 && searchTerm ? 'block' : 'none';
+        });
+    }
+
+    // Live card status updates on checkbox change
+    memberCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const card = this.closest('.membership-card');
+            const statusIndicator = card.querySelector('.member-status-indicator');
+
+            if (this.checked) {
+                card.classList.remove('inactive-member');
+                card.classList.add('active-member');
+                statusIndicator.innerHTML = '<span class="badge bg-success"><i class="bi bi-check-circle"></i> Member</span>';
+            } else {
+                card.classList.remove('active-member');
+                card.classList.add('inactive-member');
+                statusIndicator.innerHTML = '<span class="badge bg-secondary"><i class="bi bi-circle"></i> Not Member</span>';
+            }
+
+            // Update member count
+            const checkedCount = document.querySelectorAll('.member-checkbox:checked').length;
+            activeMemberCount.textContent = checkedCount;
+        });
+    });
+});
+</script>
+{% endblock %}

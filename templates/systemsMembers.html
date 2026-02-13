@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block title %}Manage {{ system_name }} Memberships{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Manage {{ system_name }} Memberships</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{{ url_for('admin.update_system_memberships', system_id=system_id) }}">
+                <div class="row">
+                    {% for player in players %}
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" name="members[]" value="{{ player.player_id }}"
+                                   id="player_{{ player.player_id }}" {% if player.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="player_{{ player.player_id }}">
+                                {{ player.player_name|title }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Update Memberships</button>
+                <a href="{{ url_for('admin.admin_memberships_dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

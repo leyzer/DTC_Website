@@ -1,0 +1,189 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    About - Warhammer 40k League
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <!-- Header -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="mb-2">Warhammer 40k League</h1>
+            <h4 class="text-muted mb-0">Durban, South Africa</h4>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">About the League</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        Welcome to the Durban Warhammer 40,000 League! We are a community-driven competitive gaming league 
+                        dedicated to fostering friendly competition and camaraderie among players of all skill levels.
+                    </p>
+                    <p>
+                        Our league tracks player ratings across multiple game systems, promotes participation in local stores, 
+                        and celebrates player achievements through seasonal competitions and rankings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scoring System -->
+    <div class="row mb-5">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Scoring System</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Players earn points in the following categories:</p>
+                    <table class="table table-sm table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Category</th>
+                                <th>Max Points</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Generalship</strong></td>
+                                <td class="text-center">40</td>
+                                <td>Based on game results and win/loss record</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Painted</strong></td>
+                                <td class="text-center">10</td>
+                                <td>Fully painted miniatures (Battle Ready standard)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>WYSIWYG</strong></td>
+                                <td class="text-center">10</td>
+                                <td>What You See Is What You Get - clear models</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Games Played</strong></td>
+                                <td class="text-center">10</td>
+                                <td>Participation bonus - 1 point per game (max 10)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Unique Systems</strong></td>
+                                <td class="text-center">30</td>
+                                <td>Playing across different game systems</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="text-muted small mt-3 mb-0"><strong>Total Possible:</strong> 100 points</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Frequently Asked Questions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="faqAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    How do I join the league?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Simply <a href="{{ url_for('auth.register') }}">create an account</a> on this website. 
+                                    You can then play games at any of our partner stores and admins will record your results. 
+                                    Your rating will be calculated automatically!
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    What's the difference between the ranking tables?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Each game system has its own rankings. You can compete in one or multiple systems. 
+                                    Your overall league rating reflects your performance across all systems you participate in.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    How often are standings updated?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Standings are updated whenever a game is recorded. Admins typically log results same-day 
+                                    or the next day. You can check your rating anytime on the league homepage.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    What does the ⭐ star mean next to names?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    The star indicates a club member for the current season. Club members are players who 
+                                    have registered with the league organization and are eligible for seasonal prizes.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                    Can I dispute a game result?
+                                </button>
+                            </h2>
+                            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body">
+                                    Yes! If you believe a result was recorded incorrectly, contact an admin immediately. 
+                                    Admins can review and correct results if there's a genuine error.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Store & Contact Info -->
+    <div class="row mb-5">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">League Information</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Location:</strong> Durban, South Africa
+                    </p>
+                    <p class="mb-0">
+                        <strong>Questions or Feedback?</strong> Contact an admin through the league management system.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

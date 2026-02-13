@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Games Played
+{% endblock %}
+
+{% block main %}
+<div>
+    <div class="col">
+        <h3>Games Played — {{ system_name }} ({{ selected_year }})</h3>
+
+        {% if admin %}
+        <form method="post" action="{{ url_for('leagues.recalc_ratings') }}">
+            <input type="hidden" name="season_id" value="{{ selected_year }}">
+            <input type="hidden" name="system_id" value="{{ system_id }}">
+            <button type="submit">Recalculate Ratings</button>
+        </form>
+
+
+        {% endif %}
+
+
+        <form id="yearForm" action="{{ url_for('leagues.gamesPlayed', system_id=system_id) }}" method="POST">
+            <select id="yearSelect" name="year" class="form-select w-auto d-inline">
+                <option value="All" {% if selected_year == 'All' %}selected{% endif %}>All</option>
+                {% for season in years %}
+                    <option value="{{ season.year }}"
+                            {% if season.year == selected_year %}selected{% endif %}>
+                        {{ season.year }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+
+        <script>
+            document.getElementById('yearSelect').addEventListener('change', function() {
+                document.getElementById('yearForm').submit();
+            });
+        </script>
+
+        <br>
+    </div>
+
+    <form id="data" action="{{ url_for('leagues.gamesPlayed', system_id=system_id) }}" method="POST">
+        <div class="table table-dark">
+            <table class="table table-striped table-hover text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">GameID</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Player 1</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Player 2</th>
+                        <th scope="col">Score</th>
+                        {% if admin %}
+                        <th scope="col">Ignored</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for game_id, game_data in game_dict.items() %}
+                    <tr>
+                        <td>{{ game_id }}</td>
+                        <td title="{{ game_data.date.strftime('%d %B %Y %H:%M:%S') }}">
+                            {{ game_data.date.strftime("%d %b %Y") }}
+                        </td>
+
+
+                        <!-- Player 1--> 
+                        
+                        <td class="{% if game_data.player1_club_member %}club-member{% else %}non-member{% endif %}
+                                {% if game_data.player1_id == game_data.winnerID %} winner{% endif %}">
+                            {{ game_data.player1_name|title }}
+                        </td>
+
+
+                        <td>
+                        {{ game_data.p1_gen }}
+                        {% if game_data.p1_change %}
+                            <span class="{% if game_data.p1_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                            ({{ "+" if game_data.p1_change > 0 else "" }}{{ game_data.p1_change }})
+                            </span>
+                        {% endif %}
+                        </td>
+
+
+                        <!-- Player 2-->
+                        <td class="{% if game_data.player2_club_member %}club-member{% else %}non-member{% endif %}
+                                {% if game_data.player2_id == game_data.winnerID %} winner{% endif %}">
+                            {{ game_data.player2_name|title }}
+                        </td>
+
+
+                        <td>
+                        {{ game_data.p2_gen }}
+                        {% if game_data.p2_change %}
+                            <span class="{% if game_data.p2_change > 0 %}text-success{% else %}text-danger{% endif %}">
+                            ({{ "+" if game_data.p2_change > 0 else "" }}{{ game_data.p2_change }})
+                            </span>
+                        {% endif %}
+                        </td>
+
+
+                        <!-- Ignored toggle for admins -->
+                        {% if admin %}
+                        <td>
+                            <form method="post" action="/toggleIgnored">
+                                <input type="hidden" name="game_id" value="{{ game_id }}">
+                                <label>
+                                    <input type="checkbox" name="ignored" value="1"
+                                        {% if game_data.ignored %}checked{% endif %}>
+                                    Ignore
+                                </label>
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if admin %}
+            <button class="btn btn-secondary mt-3" type="submit">Submit</button>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
