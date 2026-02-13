@@ -128,3 +128,14 @@ INSERT INTO factions (faction_id, system_id, faction_name) VALUES
   (58, 2, 'Tyranids');
 
 
+-- ===========================
+-- Locations
+-- ===========================
+INSERT INTO locations (location_id, name, location_type, city, notes) VALUES
+  (1, 'The Batcave', 'store', 'Durban', 'Friendly local game store'),
+  (2, 'Big Bang', 'store', 'Durban', 'Friendly local game store'),
+  (3, 'Wzrd TCG', 'store', 'Durban', 'Friendly local game store'),
+  (4, 'German Club', 'tournament', 'Durban', 'Venue'),
+  (5, 'Other', 'other', 'Durban', 'Any other venue');
+
+
