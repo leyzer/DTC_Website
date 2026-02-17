@@ -1,0 +1,240 @@
+{% extends "layout.html" %}
+
+{% block title %}League Formats{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <!-- Points-Based Scoring -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Points-Based Scoring</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>Competitive League Scoring</h5>
+                    
+                    <h6 class="mt-3">40k and AOS Points Scoring</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Points Level</th>
+                                <th>Win</th>
+                                <th>Draw</th>
+                                <th>Loss</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>1500+ pts</strong></td>
+                                <td><span class="text-success">4 pts</span></td>
+                                <td><span class="text-info">2 pts</span></td>
+                                <td><span class="text-danger">1 pt</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Combat Patrol/Spearhead/KotC/1000 pts</strong></td>
+                                <td><span class="text-success">2 pts</span></td>
+                                <td><span class="text-info">1 pt</span></td>
+                                <td><span class="text-danger">0 pts</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h6 class="mt-4">Community Leagues Scoring</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Result</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Win</strong></td>
+                                <td><span class="text-success">3 pts</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Draw</strong></td>
+                                <td><span class="text-info">1 pt</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Loss</strong></td>
+                                <td><span class="text-danger">0 pts</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-6">
+                    <h5>League Restriction</h5>
+                    <div class="alert alert-warning">
+                        <strong></strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Maximum of <strong>3 matches per unique opponent</strong> will count towards the league</li>
+                        </ul>
+                    </div>
+
+                    <h5 class="mt-4">League Eligibility</h5>
+                    <div class="alert alert-info">
+                        <p><strong>League Ranking Criteria:</strong></p>
+                        <ul class="mb-0">
+                            <li>Must be a paid DTC member</li>
+                        </ul>
+                    </div>
+
+                    <h5 class="mt-4">Hobbyist Scoring</h5>
+                    <ul>
+                        <li>Hobby challenges every ±2 months (4-5 during the year)</li>
+                        <li><strong>4 pts</strong> for 1st place</li>
+                        <li><strong>3 pts</strong> for 2nd place</li>
+                        <li><strong>2 pts</strong> for 3rd place</li>
+                        <li><strong>1 pt</strong> for participation</li>
+                    </ul>
+
+                    <div class="alert alert-light mt-3">
+                        <small><strong>League Participation:</strong> Open to anyone</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ELO System -->
+      
+    <div class="card mb-4 border-success">
+        <div class="card-header bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Elo Ratings</h4>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>Elo Ratings Overview</h5>
+                    <ul class="list-unstyled">
+                        <li><strong>Base Score:</strong> 400</li>
+                        <li><strong>Rating Calculation:</strong> Dynamic Elo formula</li>
+                    </ul>
+
+                    <h6 class="mt-4">K-Factor Values</h6>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Points Level</th>
+                                <th>K-Factor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2000+ pts (AOS & 40k)</td>
+                                <td><strong>32</strong></td>
+                            </tr>
+                            <tr>
+                                <td>1000/1500 pts (AOS & 40k)</td>
+                                <td><strong>24</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Combat Patrol/Spearhead/King of the Coliseum</td>
+                                <td><strong>16</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Community Leagues</td>
+                                <td><strong>24</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-6">
+                    <h5>League Participation Requirements</h5>
+                    <div class="alert alert-info">
+                        <p><strong>League Ranking Criteria:</strong></p>
+                        <ul class="mb-0">
+                            <li>Must be a paid DTC member</li>
+                            <li>Must have minimum number of unique opponents: <strong>½ × (number of participants) + 1, rounded up</strong></li>
+                        </ul>
+                    </div>
+
+                    <h5 class="mt-4">Hobbyist Scoring</h5>
+                    <ul>
+                        <li>Hobby challenges every 2 months (4-5 during the year)</li>
+                        <li><strong>4 pts</strong> for 1st place</li>
+                        <li><strong>3 pts</strong> for 2nd place</li>
+                        <li><strong>2 pts</strong> for 3rd place</li>
+                        <li><strong>1 pt</strong> for participation</li>
+                    </ul>
+
+                    <div class="alert alert-light mt-3">
+                        <small><strong>League Participation:</strong> Open to anyone</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-success mt-3">
+                <strong>✓ This system is currently in use</strong>
+            </div>
+        </div>
+    </div>
+    
+
+    
+    <!-- Hidden
+     Comparison 
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Comparison</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Option A (Points-Based)</th>
+                            <th>Option B (Elo Ratings)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Rating System</strong></td>
+                            <td>Fixed points per result</td>
+                            <td>Dynamic Elo ratings (0-800+)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Skill Recognition</strong></td>
+                            <td>Basic (same points regardless of opponent)</td>
+                            <td>Advanced (points vary by opponent strength)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Opponent Match Limits</strong></td>
+                            <td>Max 3 games per opponent (Premier)</td>
+                            <td>No arbitrary limits</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Unique Opponent Requirement</strong></td>
+                            <td>None specified</td>
+                            <td>½ × (participants) + 1, rounded up</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Complexity</strong></td>
+                            <td>Simple to understand and track</td>
+                            <td>More complex, better for competitive play</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Fairness for Casual Players</strong></td>
+                            <td>Good (fixed rewards)</td>
+                            <td>Good (minimum opponent requirement)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Encourages Diverse Play</strong></td>
+                            <td>Not explicitly</td>
+                            <td>Yes (minimum unique opponents)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    -->
+</div>
+{% endblock %}

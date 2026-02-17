@@ -9,16 +9,15 @@ import sqlite3
 import math
 
 
-def update_ratings_for_season(season_id, system_id, category, connection, points_band):
+def update_ratings_for_season(season_id, system_id, category, connection):
     """
-    Recalculate Elo ratings for all players in a given season/system/points band.
+    Recalculate Elo ratings for all players in a given season/system.
 
     Args:
         season_id (int): The season identifier.
         system_id (int): The system identifier (e.g. AoS, 40k).
         category (str): The system category (used for Elo rules).
         connection (sqlite3.Connection): Active database connection.
-        points_band (int): Points band for the games (e.g. 1000, 2000).
 
     Side effects:
         - Updates `ratings` table with current_rating and games_played.
@@ -39,17 +38,21 @@ def update_ratings_for_season(season_id, system_id, category, connection, points
         ORDER BY g.played_on
     """, (season_id, system_id, category)).fetchall()
 
-    # Get K-factor and base rating
-    k_factor_row = cursor.execute("""
-        SELECT k_factor, base_rating
+    # Get K-factor rules for this category (will lookup per game)
+    k_factor_rules = cursor.execute("""
+        SELECT points_band, k_factor, base_rating
         FROM elo_rules
-        WHERE category = ? AND points_band = ?
-        LIMIT 1
-    """, (category, points_band)).fetchone()
-    if not k_factor_row:
-        print(f"No K-factor found for category {category} and points_band {points_band}")
+        WHERE category = ?
+    """, (category,)).fetchall()
+    k_factor_map = {row[0]: row[1] for row in k_factor_rules}
+    base_rating_map = {row[0]: row[2] for row in k_factor_rules}
+
+    if not k_factor_map:
+        print(f"No K-factor rules found for category {category}")
         return
-    k_factor, base_rating = k_factor_row
+
+    # Use the first available base_rating for initialization
+    base_rating = k_factor_rules[0][2]
 
     # Initialize ratings
     current_ratings = {}
@@ -71,6 +74,12 @@ def update_ratings_for_season(season_id, system_id, category, connection, points
     # Process games
     for game in games:
         game_id, played_on, points_band, p1_id, p1_result, p2_id, p2_result = game
+
+        # Get k_factor for this specific game's points_band
+        k_factor = k_factor_map.get(points_band)
+        if not k_factor:
+            print(f"Warning: no k_factor found for points_band '{points_band}', skipping game {game_id}")
+            continue
 
         r1, r2 = current_ratings[p1_id], current_ratings[p2_id]
 
@@ -123,14 +132,14 @@ def update_ratings_for_season(season_id, system_id, category, connection, points
 
 def process_ratings(season_id, system_id):
     """
-    Wrapper to recalculate ratings for all points bands in a season/system.
+    Recalculate ratings for all games in a season/system.
 
     Args:
         season_id (int): The season identifier.
         system_id (int): The system identifier.
 
     Side effects:
-        - Calls update_ratings_for_season for each points band.
+        - Calls update_ratings_for_season once for the entire season/system.
         - Commits all changes to the database.
     """
     with sqlite3.connect("GPTLeague.db") as conn:
@@ -143,12 +152,6 @@ def process_ratings(season_id, system_id):
             raise ValueError(f"No category found for system {system_id}")
         category = category_row[0]
 
-        points_bands = cursor.execute(
-            "SELECT DISTINCT points_band FROM elo_rules WHERE category = ?",
-            (category,)
-        ).fetchall()
-
-        for pb in points_bands:
-            update_ratings_for_season(season_id, system_id, category, conn, pb[0])
+        update_ratings_for_season(season_id, system_id, category, conn)
 
         conn.commit()

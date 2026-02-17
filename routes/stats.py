@@ -180,6 +180,28 @@ def playerstats():
                 values = [f["games"] for f in system_factions.values()]
                 graph = go.Figure(data=[go.Pie(labels=labels, values=values)])
                 graphs[system] = json.dumps(graph, cls=plotly.utils.PlotlyJSONEncoder)
+            
+            # Fetch player's individual games
+            player_games = cursor.execute("""
+                SELECT 
+                    g.game_id,
+                    g.played_on,
+                    gp.result,
+                    gp.faction_id,
+                    f.faction_name,
+                    u2.user_name AS opponent_name,
+                    l.name AS location,
+                    s.system_name
+                FROM games g
+                JOIN game_participants gp ON g.game_id = gp.game_id
+                LEFT JOIN game_participants gp2 ON g.game_id = gp2.game_id AND gp2.player_id != gp.player_id
+                LEFT JOIN users u2 ON gp2.player_id = u2.user_id
+                LEFT JOIN factions f ON gp.faction_id = f.faction_id
+                LEFT JOIN locations l ON g.location_id = l.location_id
+                JOIN systems s ON g.system_id = s.system_id
+                WHERE gp.player_id = ? AND g.played_on BETWEEN ? AND ?
+                ORDER BY g.played_on DESC
+            """, (player, start_date, end_date)).fetchall()
                          
             years_seasons = all_seasons()
 
@@ -190,7 +212,8 @@ def playerstats():
                 active=active,
                 graphs=graphs,
                 years=years_seasons,
-                selected_year=selected_year
+                selected_year=selected_year,
+                player_games=player_games
             )
         
     except Exception as e:
@@ -220,9 +243,6 @@ def store_reports():
             else:
                 selected_year = year
 
-            # Handle system selection
-            selected_system_id = request.args.get("system", "1")
-
             # Date range
             if selected_year != 'All':
                 start_date, end_date = season(selected_year)
@@ -230,32 +250,51 @@ def store_reports():
                 start_date = '0000-01-01'
                 end_date = cursor.execute("SELECT DATE('now')").fetchone()[0]
 
-            # Query: count games per store
+            # Query: count games per store for ALL systems
             if selected_year == 'All':
-                store_counts = cursor.execute("""
-                    SELECT l.name AS store_name, COUNT(g.game_id) AS games_played
+                all_systems_stores = cursor.execute("""
+                    SELECT 
+                        s.system_id,
+                        s.system_name,
+                        l.name AS store_name, 
+                        COUNT(g.game_id) AS games_played
                     FROM games g
                     JOIN locations l ON g.location_id = l.location_id
+                    JOIN systems s ON g.system_id = s.system_id
                     WHERE g.played_on BETWEEN ? AND ?
-                    AND g.system_id = ?
-                    GROUP BY l.name
-                    ORDER BY games_played DESC;
-                """, (start_date, end_date, selected_system_id)).fetchall()
+                    GROUP BY s.system_id, s.system_name, l.name
+                    ORDER BY s.system_name, games_played DESC;
+                """, (start_date, end_date)).fetchall()
             else:
-                store_counts = cursor.execute("""
-                    SELECT l.name AS store_name, COUNT(g.game_id) AS games_played
+                all_systems_stores = cursor.execute("""
+                    SELECT 
+                        s.system_id,
+                        s.system_name,
+                        l.name AS store_name, 
+                        COUNT(g.game_id) AS games_played
                     FROM games g
                     JOIN locations l ON g.location_id = l.location_id
-                    JOIN seasons s ON g.season_id = s.season_id
+                    JOIN seasons se ON g.season_id = se.season_id
+                    JOIN systems s ON g.system_id = s.system_id
                     WHERE g.played_on BETWEEN ? AND ?
-                    AND g.system_id = ?
-                    AND s.year = ?
-                    GROUP BY l.name
-                    ORDER BY games_played DESC;
-                """, (start_date, end_date, selected_system_id, selected_year)).fetchall()
+                    AND se.year = ?
+                    GROUP BY s.system_id, s.system_name, l.name
+                    ORDER BY s.system_name, games_played DESC;
+                """, (start_date, end_date, selected_year)).fetchall()
 
-            labels = [row["store_name"] for row in store_counts]
-            values = [row["games_played"] for row in store_counts]
+            # Organize by system
+            systems_data = {}
+            for row in all_systems_stores:
+                system_name = row["system_name"]
+                if system_name not in systems_data:
+                    systems_data[system_name] = {
+                        "system_id": row["system_id"],
+                        "stores": []
+                    }
+                systems_data[system_name]["stores"].append({
+                    "store_name": row["store_name"],
+                    "games_played": row["games_played"]
+                })
 
             years_seasons = cursor.execute("""
                 SELECT year 
@@ -264,21 +303,191 @@ def store_reports():
                 ORDER BY year DESC
             """).fetchall()
 
-            systems_list = cursor.execute("SELECT system_id, system_name FROM systems ORDER BY system_name").fetchall()
-
             return render_template(
                 "store_reports.html",
-                labels=labels,
-                values=values,
-                store_counts=store_counts,
+                systems_data=systems_data,
                 years=years_seasons,
                 selected_year=selected_year,
-                CURRENT_YEAR=year,
-                systems=systems_list,
-                selected_system=selected_system_id
+                CURRENT_YEAR=year
             )
 
     except Exception as e:
         print(f"Error: {e}")
         flash("An error occurred loading store reports", "warning")
         return redirect("/")
+
+
+@stats_bp.route("/overall", methods=["GET", "POST"])
+def overall():
+    """Display league results using Option A (points-based) scoring."""
+    year = CURRENT_YEAR()
+    
+    try:
+        with sqlite3.connect('GPTLeague.db') as connection:
+            connection.row_factory = sqlite3.Row
+            cursor = connection.cursor()
+
+            # Migrate from old schema if needed
+            try:
+                cursor.execute("SELECT setting_key FROM league_settings LIMIT 1")
+            except:
+                # Old table doesn't exist or has wrong schema, drop and recreate
+                cursor.execute("DROP TABLE IF EXISTS league_settings")
+            
+            # Create settings table with new schema
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS league_settings (
+                    setting_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    season_id INTEGER,
+                    setting_key TEXT NOT NULL,
+                    setting_value TEXT NOT NULL,
+                    description TEXT,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE(season_id, setting_key),
+                    FOREIGN KEY(season_id) REFERENCES seasons(season_id)
+                )
+            """)
+
+            # Handle year selection
+            if request.method == "POST":
+                selected_year = request.form.get("year")
+                if selected_year and selected_year != 'All':
+                    selected_year = int(selected_year)
+                else:
+                    selected_year = year
+            else:
+                selected_year = year
+
+            # Date range
+            if selected_year != 'All':
+                start_date, end_date = season(selected_year)
+            else:
+                start_date = '0000-01-01'
+                end_date = cursor.execute("SELECT DATE('now')").fetchone()[0]
+
+            # Get opponent limit for the selected year
+            season_row = cursor.execute("SELECT season_id FROM seasons WHERE year = ?", (selected_year,)).fetchone()
+            opponent_limit = 3  # default
+            
+            if season_row:
+                setting_row = cursor.execute("""
+                    SELECT setting_value FROM league_settings 
+                    WHERE season_id = ? AND setting_key = 'opponent_limit'
+                """, (season_row["season_id"],)).fetchone()
+                
+                if setting_row:
+                    opponent_limit = int(setting_row["setting_value"])
+
+            # Fetch all games with details for the selected year
+            games = cursor.execute("""
+                SELECT 
+                    g.game_id,
+                    g.played_on,
+                    g.points_band,
+                    g.system_id,
+                    s.system_name,
+                    gp1.player_id AS p1_id,
+                    u1.user_name AS p1_name,
+                    u1.full_name AS p1_full_name,
+                    gp1.result AS p1_result,
+                    gp2.player_id AS p2_id,
+                    u2.user_name AS p2_name,
+                    u2.full_name AS p2_full_name,
+                    gp2.result AS p2_result
+                FROM games g
+                JOIN game_participants gp1 ON g.game_id = gp1.game_id
+                JOIN game_participants gp2 ON g.game_id = gp2.game_id
+                JOIN users u1 ON gp1.player_id = u1.user_id
+                JOIN users u2 ON gp2.player_id = u2.user_id
+                JOIN systems s ON g.system_id = s.system_id
+                LEFT JOIN seasons se ON g.season_id = se.season_id
+                WHERE g.played_on BETWEEN ? AND ?
+                AND gp1.player_id < gp2.player_id
+                ORDER BY s.system_name, g.played_on
+            """, (start_date, end_date)).fetchall()
+
+            # Calculate points using Option A scoring with opponent limit
+            systems_leaderboards = {}
+            
+            for game in games:
+                system_name = game["system_name"]
+                system_id = game["system_id"]
+                points_band = game["points_band"]
+                
+                if system_name not in systems_leaderboards:
+                    systems_leaderboards[system_name] = {
+                        "system_id": system_id,
+                        "players": {}
+                    }
+                
+                # Determine points based on Option A rules
+                # Big games (1500+ pts): 4 win, 2 draw, 1 loss
+                # Small games (SP/CP/Combat Patrol): 2 win, 1 draw, 0 loss
+                if points_band in ['1500', '2000', '1000']:
+                    p1_pts = 4 if game["p1_result"] == 'win' else (2 if game["p1_result"] == 'draw' else 1)
+                    p2_pts = 4 if game["p2_result"] == 'win' else (2 if game["p2_result"] == 'draw' else 1)
+                else:  # SP/CP or other small formats
+                    p1_pts = 2 if game["p1_result"] == 'win' else (1 if game["p1_result"] == 'draw' else 0)
+                    p2_pts = 2 if game["p2_result"] == 'win' else (1 if game["p2_result"] == 'draw' else 0)
+                
+                # Add to player records
+                players = systems_leaderboards[system_name]["players"]
+                
+                if game["p1_id"] not in players:
+                    players[game["p1_id"]] = {
+                        "name": game["p1_name"],
+                        "full_name": game["p1_full_name"],
+                        "points": 0,
+                        "games": 0,
+                        "opponent_games": {}
+                    }
+                
+                if game["p2_id"] not in players:
+                    players[game["p2_id"]] = {
+                        "name": game["p2_name"],
+                        "full_name": game["p2_full_name"],
+                        "points": 0,
+                        "games": 0,
+                        "opponent_games": {}
+                    }
+                
+                # Check if we're within the opponent limit for player 1
+                if game["p2_id"] not in players[game["p1_id"]]["opponent_games"]:
+                    players[game["p1_id"]]["opponent_games"][game["p2_id"]] = 0
+                
+                if players[game["p1_id"]]["opponent_games"][game["p2_id"]] < opponent_limit:
+                    players[game["p1_id"]]["points"] += p1_pts
+                    players[game["p1_id"]]["games"] += 1
+                    players[game["p1_id"]]["opponent_games"][game["p2_id"]] += 1
+                
+                # Check if we're within the opponent limit for player 2
+                if game["p1_id"] not in players[game["p2_id"]]["opponent_games"]:
+                    players[game["p2_id"]]["opponent_games"][game["p1_id"]] = 0
+                
+                if players[game["p2_id"]]["opponent_games"][game["p1_id"]] < opponent_limit:
+                    players[game["p2_id"]]["points"] += p2_pts
+                    players[game["p2_id"]]["games"] += 1
+                    players[game["p2_id"]]["opponent_games"][game["p1_id"]] += 1
+            
+            # Sort players by points within each system
+            for system_name in systems_leaderboards:
+                players_list = list(systems_leaderboards[system_name]["players"].items())
+                players_list.sort(key=lambda x: x[1]["points"], reverse=True)
+                systems_leaderboards[system_name]["ranked"] = players_list
+            
+            years_seasons = all_seasons()
+
+            return render_template(
+                "overall.html",
+                systems_leaderboards=systems_leaderboards,
+                years=years_seasons,
+                selected_year=selected_year,
+                opponent_limit=opponent_limit,
+                CURRENT_YEAR=year
+            )
+
+    except Exception as e:
+        print(f"Error: {e}")
+        flash("An error occurred loading Option A results", "warning")
+        return redirect("/")
+

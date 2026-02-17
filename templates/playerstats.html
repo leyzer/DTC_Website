@@ -92,6 +92,52 @@ Player Stats
         </div>
     {% endfor %}
 
+    {% if player_games %}
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">Games Played</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Game ID</th>
+                            <th>Date</th>
+                            <th>System</th>
+                            <th>Faction</th>
+                            <th>Opponent</th>
+                            <th class="text-center">Result</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in player_games %}
+                        <tr>
+                            <td><strong>{{ game.game_id }}</strong></td>
+                            <td>{{ game.played_on[:10] }}</td>
+                            <td>{{ game.system_name }}</td>
+                            <td>{{ game.faction_name if game.faction_name else 'N/A' }}</td>
+                            <td>{{ game.opponent_name|title if game.opponent_name else 'Unknown' }}</td>
+                            <td class="text-center">
+                                {% if game.result == 'win' %}
+                                    <span class="badge bg-success">Win</span>
+                                {% elif game.result == 'loss' %}
+                                    <span class="badge bg-danger">Loss</span>
+                                {% elif game.result == 'draw' %}
+                                    <span class="badge bg-secondary">Draw</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ game.location if game.location else 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {% if not factions %}
         <div class="alert alert-info mt-4">
             No game data available for this player and season.

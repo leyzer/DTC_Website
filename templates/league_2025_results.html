@@ -1,0 +1,163 @@
+{% extends "layout.html" %}
+
+{% block title %}2025 DTC League Results{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="mb-0">2025 DTC League Results</h3>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <strong>2025 DTC Rules:</strong> These results are calculated using the official 2025 DTC league scoring system.
+                <ul class="mb-0 mt-2">
+                    <li><strong>League Points:</strong> 3 pts win, 1 pt draw, 0 pts loss (first 2 matches vs same opponent only)</li>
+                    <li><strong>Community Points:</strong> 1 pt per unique opponent (cumulative across all systems)</li>
+                    <li><strong>Hobbyist Points:</strong> 1 pt per painted army (max 20 per system)</li>
+                </ul>
+            </div>
+
+            <form id="yearForm" action="{{ url_for('stats.league_2025_results') }}" method="POST">
+                <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <label for="yearSelect" class="form-label">Select Year</label>
+                        <select id="yearSelect" name="year" class="form-select">
+                            <option value="All" {% if selected_year == 'All' %}selected{% endif %}>All</option>
+                            {% for season in years %}
+                                <option value="{{ season.year }}" {% if season.year == selected_year %}selected{% endif %}>
+                                    {{ season.year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-info">View Results</button>
+                    </div>
+                </div>
+            </form>
+
+            <script>
+                document.getElementById('yearSelect').addEventListener('change', function() {
+                    document.getElementById('yearForm').submit();
+                });
+            </script>
+        </div>
+    </div>
+
+    {% if systems_leaderboards %}
+        {% for system_name, system_data in systems_leaderboards.items() %}
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">{{ system_name }}</h5>
+            </div>
+            <div class="card-body">
+                {% if system_data.ranked %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Player</th>
+                                <th class="text-center" style="width: 120px;">
+                                    <span title="League Points: 3 pts win, 1 pt draw, 0 pts loss">League Points</span>
+                                </th>
+                                <th class="text-center" style="width: 120px;">
+                                    <span title="Community Points: 1 per unique opponent">Community Pts</span>
+                                </th>
+                                <th class="text-center" style="width: 120px;">
+                                    <span title="Hobbyist Points: 1 per painted army (max 20)">Hobbyist Pts</span>
+                                </th>
+                                <th class="text-center" style="width: 100px;">Games</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player_id, player_data in system_data.ranked %}
+                            <tr class="{% if loop.index == 1 %}table-success{% elif loop.index == 2 %}table-info{% elif loop.index == 3 %}table-warning{% endif %}">
+                                <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="badge bg-success" style="font-size: 1em;">🥇</span>
+                                    {% elif loop.index == 2 %}
+                                        <span class="badge bg-info" style="font-size: 1em;">🥈</span>
+                                    {% elif loop.index == 3 %}
+                                        <span class="badge bg-warning" style="font-size: 1em;">🥉</span>
+                                    {% else %}
+                                        <strong>{{ loop.index }}</strong>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ player_data.full_name|title }}</strong></td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary" style="font-size: 1.1em;">{{ player_data.league_points }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ player_data.community_points }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ player_data.hobbyist_points }}</span>
+                                </td>
+                                <td class="text-center">{{ player_data.league_games }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-light mt-3 small">
+                    <strong>Note:</strong> League Points are ranked by league points only. In case of a tie:
+                    <ol class="mb-0">
+                        <li>Number of wins</li>
+                        <li>Direct confrontation (head-to-head record)</li>
+                        <li>Play-off (between 1st and 2nd place only)</li>
+                        <li>Coin toss</li>
+                    </ol>
+                </div>
+                {% else %}
+                    <p class="text-muted">No games found for this system.</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info">
+            No game data available for the selected year.
+        </div>
+    {% endif %}
+
+    <div class="card mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">2025 DTC League Rules Summary</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Premier Leagues (Prize Eligible)</h6>
+                    <ul>
+                        <li>40k</li>
+                        <li>Age of Sigmar</li>
+                    </ul>
+                    <p class="small text-muted">Minimum 1500 pts per side</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Community Leagues</h6>
+                    <ul>
+                        <li>Kill Team</li>
+                        <li>Blood Bowl</li>
+                        <li>Trench Crusade</li>
+                        <li>Horus Heresy</li>
+                        <li>Old World</li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="my-3">
+
+            <h6>Point Tracking</h6>
+            <ul>
+                <li><strong>League Points:</strong> 3 for win, 1 for draw, 0 for loss (only first 2 vs same opponent)</li>
+                <li><strong>Community Points:</strong> 1 per unique opponent per system (cumulative across systems)</li>
+                <li><strong>Hobbyist Points:</strong> 1 per fully painted army (max 20 per system, cumulative across systems)</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

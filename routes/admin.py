@@ -379,3 +379,103 @@ def reset_temp_password(user_id):
         conn.commit()
 
     return render_template("temp_password_display.html", user=user, temp_password=temp_password)
+
+
+@admin_bp.route("/league_settings", methods=["GET", "POST"])
+@login_required
+def league_settings():
+    """Manage league scoring settings."""
+    user_id = session["user_id"]
+    
+    if not is_admin(user_id):
+        flash("You do not have permission to access this page.", "danger")
+        return redirect("/")
+
+    with sqlite3.connect("GPTLeague.db") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        # Migrate from old schema if needed
+        try:
+            cursor.execute("SELECT setting_key FROM league_settings LIMIT 1")
+        except:
+            # Old table doesn't exist or has wrong schema, drop and recreate
+            cursor.execute("DROP TABLE IF EXISTS league_settings")
+        
+        # Create settings table with new schema
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS league_settings (
+                setting_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                season_id INTEGER,
+                setting_key TEXT NOT NULL,
+                setting_value TEXT NOT NULL,
+                description TEXT,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(season_id, setting_key),
+                FOREIGN KEY(season_id) REFERENCES seasons(season_id)
+            )
+        """)
+
+        # Get list of seasons
+        seasons = cursor.execute("SELECT season_id, year FROM seasons WHERE status IN ('active','archived') ORDER BY year DESC").fetchall()
+        
+        # Get selected year (from POST or default to current year)
+        if request.method == "POST":
+            selected_year = request.form.get("year")
+            opponent_limit = request.form.get("opponent_limit")
+            
+            if selected_year:
+                try:
+                    selected_year = int(selected_year)
+                    opponent_limit = int(opponent_limit)
+                    
+                    if opponent_limit < 1:
+                        flash("Opponent limit must be at least 1", "danger")
+                        return redirect(url_for("admin.league_settings"))
+                    
+                    # Get season_id for the selected year
+                    season_row = cursor.execute("SELECT season_id FROM seasons WHERE year = ?", (selected_year,)).fetchone()
+                    if season_row:
+                        season_id = season_row["season_id"]
+                        
+                        cursor.execute("""
+                            INSERT OR REPLACE INTO league_settings (season_id, setting_key, setting_value, description, updated_at)
+                            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+                        """, (season_id, "opponent_limit", str(opponent_limit), 
+                              f"Maximum matches per opponent for {selected_year} (Option A scoring)"))
+                        
+                        conn.commit()
+                        flash(f"Opponent limit for {selected_year} updated to {opponent_limit}", "success")
+                    else:
+                        flash("Season not found", "danger")
+                except ValueError:
+                    flash("Year and opponent limit must be numbers", "danger")
+            
+            return redirect(url_for("admin.league_settings", year=selected_year))
+
+        # Get selected year from query params (default to current year)
+        selected_year = request.args.get("year")
+        if not selected_year:
+            selected_year = CURRENT_YEAR()
+        else:
+            selected_year = int(selected_year)
+        
+        # Get setting for selected year
+        season_row = cursor.execute("SELECT season_id FROM seasons WHERE year = ?", (selected_year,)).fetchone()
+        opponent_limit = 3  # default
+        
+        if season_row:
+            setting_row = cursor.execute("""
+                SELECT setting_value FROM league_settings 
+                WHERE season_id = ? AND setting_key = 'opponent_limit'
+            """, (season_row["season_id"],)).fetchone()
+            
+            if setting_row:
+                opponent_limit = int(setting_row["setting_value"])
+
+    return render_template(
+        "league_settings.html",
+        seasons=seasons,
+        selected_year=selected_year,
+        opponent_limit=opponent_limit
+    )

@@ -137,7 +137,7 @@ def league():
                     print("Player 2 inserted")
 
                     # Update ratings
-                    update_ratings_for_season(season_id, system_id, system_category, connection, points_band)
+                    update_ratings_for_season(season_id, system_id, system_category, connection)
                     connection.commit()
                 except Exception as e:
                     connection.rollback()
@@ -219,14 +219,16 @@ def gamesPlayed(system_id):
             # Query games
             gameslist_result = cursor.execute("""
                 SELECT g.game_id, g.played_on, g.score, g.ignored,
-                    gp1.player_id, u1.user_name,
-                    gp2.player_id, u2.user_name
+                    gp1.player_id, u1.full_name,
+                    gp2.player_id, u2.full_name,
+                    l.name                          
                 FROM games g
                 JOIN game_participants gp1 ON g.game_id = gp1.game_id
                 JOIN game_participants gp2 ON g.game_id = gp2.game_id
                 JOIN users u1 ON gp1.player_id = u1.user_id
                 JOIN users u2 ON gp2.player_id = u2.user_id
                 JOIN seasons s ON g.season_id = s.season_id
+                LEFT JOIN locations l ON g.location_id = l.location_id
                 LEFT JOIN club_memberships cm1 ON cm1.user_id = gp1.player_id
                     AND cm1.season_id = s.season_id
                 LEFT JOIN club_memberships cm2 ON cm2.user_id = gp2.player_id
@@ -250,84 +252,88 @@ def gamesPlayed(system_id):
                     "date": datetime.strptime(date, "%Y-%m-%d %H:%M:%S"),  
                     "score": score,
                     "winnerID": None,
-                    "ignored": ignored
+                    "ignored": ignored,
+                    "location": location
                 }
                 for game_id, date, score, ignored,
                     p1_id, p1_name, 
-                    p2_id, p2_name in gameslist_result
+                    p2_id, p2_name,
+                    location in gameslist_result
             }
 
-            # Enrich with ratings for this system
+            # Enrich with ratings for this system - batch all queries
+            # Extract unique player and game IDs
+            all_player_ids = set()
+            for data in game_dict.values():
+                all_player_ids.add(data["player1_id"])
+                all_player_ids.add(data["player2_id"])
+
+            all_game_ids = list(game_dict.keys())
+            player_ids_list = list(all_player_ids)
+
+            # Build placeholders for IN clauses
+            player_placeholders = ','.join('?' * len(player_ids_list))
+            game_placeholders = ','.join('?' * len(all_game_ids))
+
+            # Fetch all club memberships in one query
+            club_memberships = cursor.execute(f"""
+                SELECT user_id
+                FROM club_memberships
+                JOIN seasons ON club_memberships.season_id = seasons.season_id
+                WHERE seasons.year = ? AND is_member = 1 AND user_id IN ({player_placeholders})
+            """, [selected_year] + player_ids_list).fetchall()
+            club_set = {row[0] for row in club_memberships}
+
+            # Fetch all current ratings in one query
+            all_ratings = cursor.execute(f"""
+                SELECT player_id, current_rating
+                FROM ratings
+                JOIN seasons ON seasons.season_id = ratings.season_id
+                WHERE seasons.year = ? AND ratings.system_id = ? AND player_id IN ({player_placeholders})
+            """, [selected_year, system_id] + player_ids_list).fetchall()
+            ratings_lookup = {row[0]: row[1] for row in all_ratings}
+
+            # Fetch all rating history in one query
+            all_history = cursor.execute(f"""
+                SELECT game_id, player_id, old_rating, new_rating
+                FROM rating_history
+                WHERE system_id = ? AND game_id IN ({game_placeholders})
+            """, [system_id] + all_game_ids).fetchall()
+            history_lookup = {(row[0], row[1]): (row[2], row[3]) for row in all_history}
+
+            # Fetch all winners in one query
+            all_winners = cursor.execute(f"""
+                SELECT game_id, player_id
+                FROM game_participants
+                WHERE game_id IN ({game_placeholders}) AND result = 'win'
+            """, all_game_ids).fetchall()
+            winners_lookup = {row[0]: row[1] for row in all_winners}
+
+            # Enrich game_dict with pre-fetched data
             for game_id, data in game_dict.items():
                 p1_id, p2_id = data["player1_id"], data["player2_id"]
 
-                # Club membership check (season-based)
-                club_row = cursor.execute("""
-                    SELECT 1 FROM club_memberships
-                    JOIN seasons ON club_memberships.season_id = seasons.season_id
-                    WHERE seasons.year = ? AND user_id = ? AND is_member = 1
-                """, (selected_year, p1_id)).fetchone()
+                # Set club membership from pre-fetched data
+                data["player1_club_member"] = p1_id in club_set
+                data["player2_club_member"] = p2_id in club_set
 
-                data["player1_club_member"] = bool(club_row)
+                # Set current ratings from pre-fetched data
+                data["p1_gen"] = ratings_lookup.get(p1_id, 0)
+                data["p2_gen"] = ratings_lookup.get(p2_id, 0)
 
-                club_row = cursor.execute("""
-                    SELECT 1 FROM club_memberships
-                    WHERE season_id = ? AND user_id = ?
-                    AND is_member = 1
-                """, (selected_year, p2_id)).fetchone()
-                data["player2_club_member"] = bool(club_row)
-
-                p1_gen_row = cursor.execute("""
-                    SELECT current_rating
-                    FROM ratings
-                    JOIN seasons ON seasons.season_id = ratings.season_id
-                    WHERE seasons.year = ? AND ratings.player_id = ? AND ratings.system_id = ?
-                    LIMIT 1
-                """, (selected_year, p1_id, system_id)).fetchone()
-                if p1_gen_row:
-                    data["p1_gen"] = p1_gen_row[0]
-
-                p2_gen_row = cursor.execute("""
-                    SELECT current_rating
-                    FROM ratings
-                    JOIN seasons ON seasons.season_id = ratings.season_id
-                    WHERE seasons.year = ? AND ratings.player_id = ? AND ratings.system_id = ?
-                    LIMIT 1
-                """, (selected_year, p2_id, system_id)).fetchone()
-                if p2_gen_row:
-                    data["p2_gen"] = p2_gen_row[0]
-                
-                # For Player 1
-                p1_row = cursor.execute("""
-                    SELECT old_rating, new_rating
-                    FROM rating_history
-                    WHERE game_id = ? AND player_id = ? AND system_id = ?
-                    LIMIT 1
-                """, (game_id, p1_id, system_id)).fetchone()
-                if p1_row:
-                    old, new = p1_row
+                # Override with rating history if available (more recent)
+                if (game_id, p1_id) in history_lookup:
+                    old, new = history_lookup[(game_id, p1_id)]
                     data["p1_gen"] = round(new, 2)
                     data["p1_change"] = round(new - old, 2)
 
-                # For Player 2
-                p2_row = cursor.execute("""
-                    SELECT old_rating, new_rating
-                    FROM rating_history
-                    WHERE game_id = ? AND player_id = ? AND system_id = ?
-                    LIMIT 1
-                """, (game_id, p2_id, system_id)).fetchone()
-                if p2_row:
-                    old, new = p2_row
+                if (game_id, p2_id) in history_lookup:
+                    old, new = history_lookup[(game_id, p2_id)]
                     data["p2_gen"] = round(new, 2)
                     data["p2_change"] = round(new - old, 2)
 
-                winner_row = cursor.execute("""
-                    SELECT player_id
-                    FROM game_participants
-                    WHERE game_id = ? AND result = 'win'
-                """, (game_id,)).fetchone()
-                if winner_row:
-                    data["winnerID"] = winner_row[0]
+                # Set winner from pre-fetched data
+                data["winnerID"] = winners_lookup.get(game_id)
 
             years_seasons = all_seasons()
             systems_list = cursor.execute("SELECT system_id, system_name FROM systems").fetchall()

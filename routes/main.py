@@ -8,6 +8,12 @@ main_bp = Blueprint('main', __name__)
 
 @main_bp.route("/", methods=["GET", "POST"])
 def home():
+    """Redirect home to the Overall league standings page."""
+    return redirect(url_for('stats.overall'))
+
+
+@main_bp.route("/elo_ratings", methods=["GET", "POST"])
+def elo_ratings():
     try:
         with sqlite3.connect('GPTLeague.db') as connection:
             connection.row_factory = sqlite3.Row
@@ -96,7 +102,7 @@ def home():
 
             years_seasons = all_seasons()
             return render_template(
-                "index.html",
+                "elo_ratings.html",
                 system_tables=system_tables_sorted,
                 years=years_seasons,
                 selected_year=selected_year,
@@ -183,3 +189,9 @@ def profile():
         print(f"Error: {e}")
         flash('An error occurred loading profile', 'warning')
         return apology("An error occurred loading profile", 400)
+
+
+@main_bp.route("/league_formats")
+def league_formats():
+    """Display league format options (Option A vs Option B)."""
+    return render_template("leagueFormats.html")

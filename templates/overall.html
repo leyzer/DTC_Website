@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+
+{% block title %}Overall{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h3 class="mb-0">⚔️ Overall 2026 League Standings</h3>
+        </div>
+        <div class="card-body">
+        <div class="alert alert-warning">
+                <strong>⚙️ 2026 League Results:</strong> Currently set to <strong>{{ opponent_limit }}</strong> maximum matches per unique opponent.
+                {% if current_user and current_user.is_admin %}
+                <a href="{{ url_for('admin.league_settings', year=2026) }}" class="ms-2">
+                    ⚙️ Edit settings
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="text-center mb-4">
+                <p class="text-muted">Points-Based Scoring System</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="alert alert-light">
+                <h5 class="mb-3">Scoring Rules</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Large Games (1000+ pts, 1500 pts, 2000 pts):</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Win: <span class="badge bg-success">4 pts</span></li>
+                            <li>Draw: <span class="badge bg-info">2 pts</span></li>
+                            <li>Loss: <span class="badge bg-danger">1 pt</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Small Games (Combat Patrol, Spearhead, etc.):</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Win: <span class="badge bg-success">2 pts</span></li>
+                            <li>Draw: <span class="badge bg-info">1 pt</span></li>
+                            <li>Loss: <span class="badge bg-danger">0 pts</span></li>
+                        </ul>
+                    </div>
+                </div>
+                <hr class="my-3">
+                <p class="mb-0 small">
+                    <strong>Opponent Limit:</strong> 
+                    For {{ selected_year }}, only the first {{ opponent_limit }} matches per opponent count towards the league standings.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {% if systems_leaderboards %}
+        <div class="row">
+        {% for system_name, system_data in systems_leaderboards.items() %}
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">{{ system_name }}</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if system_data.ranked %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 45px;">#</th>
+                                    <th>Player</th>
+                                    <th class="text-center" style="width: 60px;">Games</th>
+                                    <th class="text-center" style="width: 70px;">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for player_id, player_data in system_data.ranked %}
+                                <tr class="{% if loop.index == 1 %}table-success{% elif loop.index == 2 %}table-info{% elif loop.index == 3 %}table-warning{% endif %}">
+                                    <td>
+                                        {% if loop.index == 1 %}
+                                            <span class="badge bg-success" style="font-size: 1em;">🥇</span>
+                                        {% elif loop.index == 2 %}
+                                            <span class="badge bg-info" style="font-size: 1em;">🥈</span>
+                                        {% elif loop.index == 3 %}
+                                            <span class="badge bg-warning" style="font-size: 1em;">🥉</span>
+                                        {% else %}
+                                            <strong>{{ loop.index }}</strong>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ player_data.full_name|title }}</small></td>
+                                    <td class="text-center"><small>{{ player_data.games }}</small></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-primary">{{ player_data.points }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                        <p class="text-muted text-center p-3 mb-0">No games found for this system.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            No game data available for the selected year.
+        </div>
+    {% endif %}
+
+    <div class="card mt-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Comparison</h5>
+        </div>
+        <div class="card-body">
+            <p>To see how these results compare with the elo system, visit:</p>
+            <a href="{{ url_for('main.league_formats') }}" class="btn btn-primary">View League Formats</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -33,7 +33,7 @@
     <body>
         <nav class="navbar navbar-expand-md navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/"><span class="red">⚔</span> Overall</a>
+                <a class="navbar-brand" href="/overall"><span class="red"></span> Overall</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
                         aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -63,6 +63,16 @@
                             <li class="nav-item"><a class="nav-link" href="/factionstats">Faction Stats</a></li>
                             <li class="nav-item"><a class="nav-link" href="/playerstats">Player Stats</a></li>
                             <li class="nav-item"><a class="nav-link" href="/store_reports">Store Reports</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="leagueInfoDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                League Info
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="leagueInfoDropdown">
+                                    <li><a class="dropdown-item" href="{{ url_for('main.league_formats') }}">Scoring Formats</a></li>
+                                </ul>
+                            </li>
                             <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                             {% if current_user and current_user.is_admin %}
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('leagues.league') }}">Add Results</a></li>
@@ -98,6 +108,8 @@
                         <!-- guest nav -->
                          <ul class="navbar-nav me-auto mt-2">
                         <li class="nav-item"><a class="nav-link" href="/factionstats">Faction Stats</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/">📊 Elo Ratings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/league_formats">League Formats</a></li>
                         <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
@@ -130,14 +142,27 @@
         <nav aria-label="breadcrumb" class="bg-light py-2 border-bottom">
             <div class="container-fluid">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="{{ url_for('main.home') }}">🏠 Home</a></li>
-                    {% if request.path.startswith('/factionstats') %}
+                    {% if request.path == '/' or request.path.startswith('/overall') %}
+                        <li class="breadcrumb-item active">⚔️ Overall</li>
+                    {% elif request.path.startswith('/factionstats') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Faction Stats</li>
                     {% elif request.path.startswith('/playerstats') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Player Stats</li>
                     {% elif request.path.startswith('/store_reports') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Store Reports</li>
+                    {% elif request.path.startswith('/overall') %}
+                        <li class="breadcrumb-item active">⚔️ Overall</li>
+                    {% elif request.path.startswith('/league_formats') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
+                        <li class="breadcrumb-item active">Scoring Formats</li>
+                    {% elif request.path.startswith('/admin/league') %}
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
+                        <li class="breadcrumb-item active">League Settings</li>
                     {% elif request.path.startswith('/profile') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">My Profile</li>
                     {% elif request.path.startswith('/league') %}
                         <li class="breadcrumb-item"><a href="{{ url_for('leagues.league') }}">Add Results</a></li>
@@ -148,6 +173,7 @@
                         <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
                         <li class="breadcrumb-item active">Manage Users</li>
                     {% elif request.path.startswith('/about') %}
+                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">About</li>
                     {% elif request.path.startswith('/login') %}
                         <li class="breadcrumb-item active">Log In</li>

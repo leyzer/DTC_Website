@@ -52,6 +52,7 @@ Games Played
                         <th scope="col">Score</th>
                         <th scope="col">Player 2</th>
                         <th scope="col">Score</th>
+                        <th scope="col">Location</th>
                         {% if admin %}
                         <th scope="col">Ignored</th>
                         {% endif %}
@@ -100,6 +101,9 @@ Games Played
                         {% endif %}
                         </td>
 
+                        <td>
+                            {{ game_data.location }}
+                        </td>
 
                         <!-- Ignored toggle for admins -->
                         {% if admin %}
