@@ -55,6 +55,9 @@ GPTLeague.db
 instance/
 .webassets-cache
 flask_session/
+gunicorn.ctl
+*.pid
+*.sock
 
 # Temporary Files
 tmp*/
