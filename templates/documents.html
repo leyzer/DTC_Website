@@ -1,0 +1,516 @@
+{% extends "layout.html" %}
+
+{% block title %} - Club Documents {% endblock %}
+
+{% block main %}
+<div class="documents-container">
+    <div class="documents-header">
+        <h1>Club Documents</h1>
+        <p class="lead">Important information for club members and prospective members</p>
+    </div>
+
+    <div class="documents-grid">
+        <!-- Vision and Mission Statement -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#vision-mission" role="button">
+                <h2>Vision and Mission Statement</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="vision-mission" class="collapse show">
+                <div class="document-body">
+                    <h3>Mission</h3>
+                    <p>To cultivate a dynamic and inclusive community where enthusiasts of gaming can come together to share their passion, hone strategic skills, and immerse themselves in engaging and innovative tabletop experiences.</p>
+                    
+                    <h3>Vision</h3>
+                    <p>We envision a club that inspires camaraderie, fosters creativity, and serves as a hub for both competitive play and storytelling, while promoting respect, diversity, and lifelong enjoyment of the tabletop hobby.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Committee Vision for 2025 -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#committee-vision" role="button">
+                <h2>Committee Vision for 2025</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="committee-vision" class="collapse">
+                <div class="document-body">
+                    <h3>Club Growth and Development Goals</h3>
+                    
+                    <h4>Expand Membership</h4>
+                    <p>Increase the club's active membership to 30 enthusiastic participants who regularly engage in club activities, events, and community-building initiatives.</p>
+                    
+                    <h4>Develop Leagues</h4>
+                    <p>Establish and grow thriving leagues for Warhammer 40,000 and Age of Sigmar, achieving consistent participation of 15 or more players in each league.</p>
+                    
+                    <h4>Enhance Gaming Facilities</h4>
+                    <p>Refurbish and expand the club's gaming terrain and boards to a high-quality standard, ensuring they are visually appealing, durable, and immersive. Equip the club to support over 10 fully set-up gaming tables simultaneously, catering to Warhammer 40,000 and Age of Sigmar players.</p>
+                    
+                    <h4>Expand Specialist Game Resources</h4>
+                    <p>Build a diverse collection of terrain and gaming boards specifically designed for specialist games such as Kill Team, Warcry, Mordheim, Verrotwood, and other narrative-driven or skirmish-based systems, creating a rich variety of gaming experiences for members.</p>
+                    
+                    <h4>Expand Gaming Aids</h4>
+                    <p>Expand the club's collection of gaming assets to improve the overall experience. This includes acquiring and maintaining high-quality objective marker sets, printed and easy-to-reference rules summaries, templates, tokens, and other tools that streamline gameplay and reduce setup time.</p>
+                    
+                    <h4>Expanding the Hobby Side of the Club</h4>
+                    <p>Organize regular hobby-focused events to engage members in various aspects of the tabletop gaming experience. These events will include painting sessions, miniature-building workshops, terrain creation days, and other hands-on activities that foster creativity, skill-building, and camaraderie within the community.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Club Membership -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#membership" role="button">
+                <h2>Club Membership</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="membership" class="collapse">
+                <div class="document-body">
+                    <h3>Membership Fees</h3>
+                    <div class="membership-fees">
+                        <div class="fee-item">
+                            <span class="fee-type">General</span>
+                            <span class="fee-price">R300 per year</span>
+                        </div>
+                        <div class="fee-item">
+                            <span class="fee-type">Students & Pensioners</span>
+                            <span class="fee-price">R150 per year</span>
+                        </div>
+                        <div class="fee-item">
+                            <span class="fee-type">Persons with Disabilities</span>
+                            <span class="fee-price">R100 per year</span>
+                        </div>
+                    </div>
+                    
+                    <h3>League Registration</h3>
+                    <p>Members who have paid their club fees will be automatically registered to participate in the Age of Sigmar and Warhammer 40,000 leagues, granting them access to structured league play, organized matchups, and ranking opportunities within the club.</p>
+                    
+                    <h3>Tournament Discounts</h3>
+                    <p>Paid club members will enjoy reduced entry fees for major tournaments organized by the club, making participation in these events more affordable while fostering greater involvement in competitive play.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Club Events -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#events" role="button">
+                <h2>Club Events</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="events" class="collapse">
+                <div class="document-body">
+                    <h3>Club Days</h3>
+                    <p>All club supported game days will take place at the <strong>Westville German Club</strong>, offering a regular and reliable venue for members to enjoy their games. These sessions will be held <strong>every second Wednesday</strong>, with any changes or updates communicated through the club's official channels.</p>
+                    
+                    <h3>Club Events Venue</h3>
+                    <p>All club events will be hosted at the club's established headquarters, the <strong>Westville German Club</strong>, providing a consistent and familiar location for members to gather, play, and engage in club activities.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Club's Commitments -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#commitments" role="button">
+                <h2>Club's Commitments</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="commitments" class="collapse">
+                <div class="document-body">
+                    <h3>Supported and Sponsored Gaming Systems</h3>
+                    <p>The club actively supports and sponsors the following gaming systems, providing structured league formats, events, and resources to foster competitive and community play:</p>
+                    <ul class="gaming-systems">
+                        <li class="system-primary">Warhammer 40,000</li>
+                        <li class="system-primary">Age of Sigmar</li>
+                    </ul>
+                    
+                    <h3>Encouraged Gaming Systems</h3>
+                    <p>In addition to the primary supported games, the club encourages participation in a variety of other gaming systems to diversify member experiences and explore additional narratives and styles of play:</p>
+                    <ul class="gaming-systems">
+                        <li>Horus Heresy</li>
+                        <li>The Old World</li>
+                        <li>Warhammer 40,000: Kill Team</li>
+                        <li>Age of Sigmar: Warcry</li>
+                        <li>Blood Bowl</li>
+                    </ul>
+                    <p>These games provide opportunities for players to delve into specialist and skirmish-based formats, fostering creativity, collaboration, and a broader appreciation of the tabletop gaming hobby.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code of Conduct -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#conduct" role="button">
+                <h2>Code of Conduct</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="conduct" class="collapse">
+                <div class="document-body">
+                    <p class="lead">Our goal is to create a friendly, inclusive, and fun environment for all members. To ensure everyone has an enjoyable experience, we ask that all members follow this Code of Conduct.</p>
+                    
+                    <h3>1. Respect Others</h3>
+                    <ul>
+                        <li>Treat all members with kindness, courtesy, and respect, regardless of their background, skill level, or personal preferences.</li>
+                        <li>Avoid personal insults, harassment, or discriminatory behavior of any kind, including comments about race, gender, sexual orientation, religion, or disability.</li>
+                    </ul>
+                    
+                    <h3>2. Practice Good Sportsmanship</h3>
+                    <ul>
+                        <li>Be gracious in both victory and defeat.</li>
+                        <li>Follow the rules of the game and respect the decisions of moderators, referees, or game masters.</li>
+                        <li>Avoid behaviors that disrupt the game or diminish the enjoyment of others.</li>
+                        <li>Try to arrive on time for your game, with all of the things that you need to play.</li>
+                        <li>Offer your opponent the chance to examine your army list before the game begins.</li>
+                        <li>Discuss the terrain before the game starts to ensure that each player has all the necessary information regarding the terrain.</li>
+                        <li>Do not actively deceive your opponent: if your opponent asks questions related to your rules or army list, answer them truthfully and directly.</li>
+                        <li>When rolling dice, make sure they are clearly visible to all players.</li>
+                        <li>Always ask for permission before touching any of your opponent's models.</li>
+                        <li>Never deliberately manipulate the amount of time a game takes to gain advantage, either by playing overly quickly or wasting time.</li>
+                        <li>Try not to distract an opponent when they are trying to concentrate and always respect their personal space.</li>
+                        <li>Never fix the outcome of a game for any reason whatsoever.</li>
+                    </ul>
+                    
+                    <h3>3. Maintain a Safe and Inclusive Environment</h3>
+                    <ul>
+                        <li>Ensure that everyone feels welcome and included in games and club activities.</li>
+                        <li>Speak up if you notice inappropriate behavior and report it to club leadership if necessary.</li>
+                    </ul>
+                    
+                    <h3>4. Respect Property</h3>
+                    <ul>
+                        <li>Treat club-owned materials, personal belongings, and game components with care.</li>
+                        <li>Clean up after yourself and help maintain a tidy and organized play area.</li>
+                    </ul>
+                    
+                    <h3>5. Keep Communication Open and Constructive</h3>
+                    <ul>
+                        <li>Use respectful and constructive language in discussions, whether in-person or online.</li>
+                        <li>Resolve conflicts calmly and seek assistance from club leadership when needed.</li>
+                    </ul>
+                    
+                    <h3>6. Adhere to Club Policies</h3>
+                    <ul>
+                        <li>Follow any club-specific rules, including membership guidelines, event policies, and safety protocols.</li>
+                        <li>Arrive on time for events and notify organizers if you can't attend.</li>
+                    </ul>
+                    
+                    <h3>7. Have Fun and Support Each Other</h3>
+                    <ul>
+                        <li>Encourage new players and help them learn the games.</li>
+                        <li>Celebrate the creativity and effort of others, whether it's in strategic gameplay or crafting miniatures.</li>
+                    </ul>
+                    
+                    <h3>Consequences for Violating the Code of Conduct</h3>
+                    <p>Failure to follow this Code of Conduct may result in warnings, temporary suspension, or permanent removal from the club, depending on the severity of the issue.</p>
+                    <p><strong>Thank you for helping make this club a fantastic place to play, learn, and connect!</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- League Rules -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#league-rules" role="button">
+                <h2>DTC 2025 League Rules</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="league-rules" class="collapse">
+                <div class="document-body">
+                    <ul>
+                        <li>Separate leagues will be run for 40k, AOS, Kill Team, Blood Bowl, Trench Crusade, Horus Heresy, Old World, and multiplayer systems.</li>
+                        <li>40k and AOS will serve as the <strong>DTC Premier Leagues</strong>, whereas all other leagues will be <strong>DTC Community Leagues</strong>.</li>
+                        <li>DTC Premier Leagues are eligible for prize support from the club.</li>
+                        <li>Except for special cases in tournaments, DTC Premier League matches should be at least 1500 pts per side.</li>
+                        <li>League scoring for all systems except for multiplayer systems: <strong>3 league points for a win, 1 league point for a draw, 0 league points for a defeat</strong>.</li>
+                        <li>In the buildup period to each DTC Premier League tournament there will be an official "Campaign Season" (to run for a period of several weeks) for which <strong>1 bonus League Point</strong> will be awarded to participating players.</li>
+                        <li>Ranking in a league is to be determined on the basis of league points only.</li>
+                        <li>In the event of a tie on league points, the following order of precedence applies: number of wins, direct confrontation, play-off (between 1st and 2nd place only), coin toss.</li>
+                        <li>League points are only awarded for the first 2 matches between each pair of players in the DTC Premier Leagues.</li>
+                    </ul>
+                    
+                    <h3>Additional Leaderboards</h3>
+                    <p>There will be 2 additional overall DTC Leaderboards for non-multiplayer systems: <strong>Hobbyist</strong> and <strong>Community</strong>.</p>
+                    
+                    <h4>Hobbyist Points</h4>
+                    <p>A player will score 1 Hobbyist point for each game where their entire force is WYSIWYG, and 1 Hobbyist point if their entire force is fully painted, up to a maximum of 20 hobbyist points per system. Scoring is cumulative across all systems.</p>
+                    
+                    <h4>Community Points</h4>
+                    <p>A player will score 1 Community point for each game they play against a unique opponent in each system. Scoring is cumulative across all systems.</p>
+                    
+                    <h3>Tournaments</h3>
+                    <ul>
+                        <li>It is at the discretion of T.O.s for tournaments as to whether or not matches in that tournament will count towards the league for that system, and this must be announced beforehand.</li>
+                        <li>Only tournaments run by the DTC (i.e. not store events) shall be considered for the DTC leagues.</li>
+                    </ul>
+                    
+                    <h3>Multiplayer Systems</h3>
+                    <p>For multiplayer systems, scoring is as follows:</p>
+                    <ul>
+                        <li>3 league points for 1st place</li>
+                        <li>2 league points for 2nd place</li>
+                        <li>1 league point for 3rd place</li>
+                        <li>1 league point if a player performed a noteworthy feat (epic or hilarious, as determined by the players)</li>
+                        <li>1 league point for the player with the prettiest models (most visually appealing model/models, as determined by the players)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Documents -->
+        <div class="document-card">
+            <div class="document-header" data-bs-toggle="collapse" href="#other-docs" role="button">
+                <h2>Other Documents</h2>
+                <span class="collapse-icon">▼</span>
+            </div>
+            <div id="other-docs" class="collapse">
+                <div class="document-body">
+                    <p>Additional tournament and event documentation:</p>
+                    <ul class="document-list">
+                        <li>
+                            <span class="doc-title">DTC Tournament Clarification Pack</span>
+                            <p>Official clarifications and rulings for DTC-organized tournaments</p>
+                        </li>
+                        <li>
+                            <span class="doc-title">First Blood 2025 Tournament Pack</span>
+                            <p>Complete information for the First Blood 2025 tournament event</p>
+                        </li>
+                    </ul>
+                    <p class="text-muted mt-3">For detailed tournament documentation, please contact club leadership.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.documents-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.documents-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+.documents-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.documents-header .lead {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.documents-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.document-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.document-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary-color);
+}
+
+.document-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+    transition: all 0.3s ease;
+}
+
+.document-header:hover {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+}
+
+.document-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    flex: 1;
+}
+
+.collapse-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    margin-left: 1rem;
+}
+
+.document-card .collapse:not(.show) ~ .document-header .collapse-icon {
+    transform: rotate(-90deg);
+}
+
+.document-body {
+    padding: 2rem;
+    color: var(--text-primary);
+}
+
+.document-body h3 {
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.document-body h3:first-child {
+    margin-top: 0;
+}
+
+.document-body h4 {
+    color: var(--primary-color);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.05rem;
+}
+
+.document-body p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.document-body ul {
+    margin-bottom: 1rem;
+    margin-left: 1.5rem;
+}
+
+.document-body li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.membership-fees {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.fee-item {
+    background: var(--light-bg);
+    border-left: 4px solid var(--secondary-color);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fee-type {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.fee-price {
+    color: var(--secondary-color);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.gaming-systems {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.gaming-systems li {
+    padding: 0.75rem 1rem;
+    background: var(--light-bg);
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.gaming-systems li.system-primary {
+    border-left-color: var(--primary-color);
+    font-weight: 600;
+    background: linear-gradient(90deg, var(--light-bg) 0%, transparent 100%);
+}
+
+.document-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.document-list li {
+    padding: 1rem;
+    background: var(--light-bg);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.document-list .doc-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.document-list p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+}
+
+html.dark-mode .document-header {
+    background: linear-gradient(135deg, #2a4a7a 0%, #3a6aaa 100%);
+}
+
+html.dark-mode .document-header:hover {
+    background: linear-gradient(135deg, #3a6aaa 0%, #2a4a7a 100%);
+}
+
+html.dark-mode .fee-item {
+    background-color: #2a3a52;
+}
+
+html.dark-mode .gaming-systems li {
+    background-color: #2a3a52;
+}
+
+html.dark-mode .document-list li {
+    background-color: #2a3a52;
+}
+
+@media (max-width: 768px) {
+    .documents-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .document-header {
+        padding: 1rem;
+    }
+    
+    .document-header h2 {
+        font-size: 1.25rem;
+    }
+    
+    .document-body {
+        padding: 1.5rem;
+    }
+    
+    .membership-fees {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

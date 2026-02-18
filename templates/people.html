@@ -1,0 +1,362 @@
+{% extends "layout.html" %}
+
+{% block title %} - People {% endblock %}
+
+{% block main %}
+<div class="people-container">
+    <div class="people-header">
+        <h1>Club People</h1>
+        <p class="lead">Meet the leadership driving the Durban Tabletop Club</p>
+    </div>
+
+    <div class="structure-intro">
+        <p>The club consists of the <strong>Committee</strong> who lead the club, <strong>Praetors</strong> who champion various communities of players and hobbyists, and <strong>Tribunes</strong> who organise and officiate events for Warhammer 40,000 and Age of Sigmar.</p>
+    </div>
+
+    <div class="people-grid">
+        <!-- Committee Section -->
+        <div class="role-card">
+            <div class="role-header">
+                <h2>Committee</h2>
+                <span class="role-count">4</span>
+            </div>
+            <div class="role-body">
+                <div class="person-item">
+                    <span class="person-name">Madison L</span>
+                    <span class="person-title">Chair</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Brandon W</span>
+                    <span class="person-title">Vice Chair</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Kyle J</span>
+                    <span class="person-title">Treasurer</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Praetors Section -->
+        <div class="role-card">
+            <div class="role-header">
+                <h2>Praetors</h2>
+                <span class="role-count">6</span>
+            </div>
+            <div class="role-body">
+                <div class="person-item">
+                    <span class="person-name">Carl C</span>
+                    <span class="person-specialty">Blood Bowl</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Darryn P</span>
+                    <span class="person-specialty">Warcry & Hobby</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Gareth B</span>
+                    <span class="person-specialty">Trench Crusade</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Gareth F</span>
+                    <span class="person-specialty">Old World</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Madison L</span>
+                    <span class="person-specialty">Kill Team</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Marc M</span>
+                    <span class="person-specialty">Horus Heresy</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tribunes Section -->
+        <div class="role-card">
+            <div class="role-header">
+                <h2>Tribunes</h2>
+                <span class="role-count">5</span>
+            </div>
+            <div class="role-body">
+                <p class="role-description">Organise and officiate events for Warhammer 40,000 and Age of Sigmar</p>
+                <div class="person-item">
+                    <span class="person-name">Brandon W</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Jonathan S</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Kyle J</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Madison L</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Maxim B</span>
+                </div>
+                <div class="person-item">
+                    <span class="person-name">Neal C</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stores Section -->
+    <div class="stores-section">
+        <h2>Partner Stores</h2>
+        <p class="stores-intro">There are also a few stores in the greater Durban area where you can get started with building and painting your army!</p>
+        
+        <div class="stores-grid">
+            <div class="store-card">
+                <h3>The Batcave</h3>
+                <p class="store-location">in Kloof</p>
+            </div>
+            <div class="store-card">
+                <h3>Big Bang</h3>
+                <p class="store-location">in Umhlanga</p>
+            </div>
+            <div class="store-card">
+                <h3>Supernova Studio</h3>
+                <p class="store-location">on the Bluff</p>
+            </div>
+            <div class="store-card">
+                <h3>Wzrd TCG</h3>
+                <p class="store-location">in Glenwood</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.people-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.people-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+.people-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.people-header .lead {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.structure-intro {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    padding: 1.5rem;
+    background: var(--light-bg);
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.structure-intro p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-primary);
+}
+
+.people-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.role-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.role-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary-color);
+    transform: translateY(-4px);
+}
+
+.role-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    color: white;
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.role-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    flex: 1;
+}
+
+.role-count {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.role-body {
+    padding: 1.5rem;
+}
+
+.role-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+}
+
+.person-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.person-item:last-child {
+    border-bottom: none;
+}
+
+.person-name {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.person-title,
+.person-specialty {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Stores Section */
+.stores-section {
+    margin-top: 4rem;
+    padding: 2rem;
+    background: var(--light-bg);
+    border-radius: 12px;
+}
+
+.stores-section h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.stores-intro {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.stores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.store-card {
+    background: var(--card-bg);
+    border: 2px solid var(--secondary-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.store-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-4px);
+    border-color: var(--primary-color);
+}
+
+.store-card h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.store-location {
+    color: var(--secondary-color);
+    margin: 0;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+html.dark-mode .structure-intro {
+    background-color: var(--light-bg);
+}
+
+html.dark-mode .role-card {
+    border-color: var(--border-color);
+}
+
+html.dark-mode .role-header {
+    background: linear-gradient(135deg, #2a4a7a 0%, #3a6aaa 100%);
+}
+
+html.dark-mode .stores-section {
+    background-color: var(--light-bg);
+}
+
+html.dark-mode .person-item {
+    border-bottom-color: var(--border-color);
+}
+
+@media (max-width: 768px) {
+    .people-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .people-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .stores-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .role-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .role-header h2 {
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .stores-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}

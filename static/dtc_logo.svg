@@ -1,0 +1,58 @@
+<svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield background -->
+  <defs>
+    <linearGradient id="shieldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a3a52;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f2d40;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main shield -->
+  <path d="M 100 20 L 160 50 L 160 110 C 160 150 100 180 100 180 C 100 180 40 150 40 110 L 40 50 Z" 
+        fill="url(#shieldGradient)" stroke="#1a1a1a" stroke-width="2"/>
+  
+  <!-- Horns/Decorative top -->
+  <path d="M 65 35 Q 50 20 35 35" stroke="#8B6F47" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path d="M 135 35 Q 150 20 165 35" stroke="#8B6F47" stroke-width="3" fill="none" stroke-linecap="round"/>
+  
+  <!-- Ribbon banner top -->
+  <g>
+    <path d="M 60 45 L 100 50 L 140 45" stroke="#f5e6d3" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="100" y="52" font-size="16" font-weight="bold" text-anchor="middle" fill="#1a3a52">DURBAN</text>
+  </g>
+  
+  <!-- Dice cube in center -->
+  <g transform="translate(100, 85)">
+    <!-- Front face -->
+    <rect x="-25" y="-25" width="50" height="50" fill="#2d5a8c" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Top face -->
+    <polygon points="-25,-25 -15,-35 35,-35 25,-25" fill="#3d7aac" stroke="#1a1a1a" stroke-width="1.5"/>
+    <!-- Right face -->
+    <polygon points="25,-25 35,-35 35,15 25,25" fill="#1a3a52" stroke="#1a1a1a" stroke-width="1.5"/>
+    
+    <!-- Dice eye/dot -->
+    <circle cx="-5" cy="0" r="8" fill="#f5e6d3"/>
+    <circle cx="-5" cy="0" r="5" fill="#ffffff"/>
+    
+    <!-- T C letters -->
+    <text x="-12" y="12" font-size="20" font-weight="bold" fill="#f5e6d3" text-anchor="middle">T</text>
+    <text x="12" y="12" font-size="20" font-weight="bold" fill="#f5e6d3" text-anchor="middle">C</text>
+  </g>
+  
+  <!-- Ribbon banner bottom - TABLETOP -->
+  <g transform="translate(0, 145)">
+    <path d="M 50 0 L 100 5 L 150 0" stroke="#f5e6d3" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <text x="100" y="22" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a3a52">TABLETOP</text>
+  </g>
+  
+  <!-- Ribbon banner bottom - CLUB -->
+  <g transform="translate(0, 175)">
+    <path d="M 60 0 L 100 5 L 140 0" stroke="#c9a961" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <text x="100" y="22" font-size="14" font-weight="bold" text-anchor="middle" fill="#1a3a52">CLUB</text>
+  </g>
+  
+  <!-- Decorative elements bottom left -->
+  <path d="M 30 195 Q 20 185 15 200" stroke="#c9a961" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <!-- Decorative elements bottom right -->
+  <path d="M 170 195 Q 180 185 185 200" stroke="#c9a961" stroke-width="4" fill="none" stroke-linecap="round"/>
+</svg>

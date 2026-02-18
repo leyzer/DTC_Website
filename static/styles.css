@@ -1,19 +1,44 @@
-/* Modern Design System */
+/* Durban Tabletop Club - Design System */
+
 :root {
-    --primary-color: #1a365d;
-    --primary-light: #2d5a8c;
-    --secondary-color: #00a86b;
-    --accent-color: #ff6b6b;
-    --dark-bg: #0f1419;
-    --light-bg: #f8fafc;
+    /* DTC Brand Colors */
+    --dtc-navy: #1a3a52;
+    --dtc-navy-light: #2d5a8c;
+    --dtc-navy-dark: #0f2d40;
+    --dtc-cream: #f5e6d3;
+    --dtc-cream-dark: #e0d4c1;
+    --dtc-gold: #c9a961;
+    --dtc-gold-light: #dfc894;
+    --dtc-gold-dark: #9d7d45;
+    
+    /* Light Mode */
+    --primary-color: var(--dtc-navy);
+    --primary-light: var(--dtc-navy-light);
+    --primary-dark: var(--dtc-navy-dark);
+    --secondary-color: var(--dtc-gold);
+    --accent-color: var(--dtc-gold-light);
+    --light-bg: #ffffff;
     --card-bg: #ffffff;
-    --text-primary: #1a202c;
+    --text-primary: var(--dtc-navy);
     --text-secondary: #4a5568;
-    --border-color: #e2e8f0;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.15);
+    --border-color: var(--dtc-cream-dark);
+    --nav-bg: var(--dtc-navy);
+    
+    /* Shadows & Transitions */
+    --shadow-sm: 0 1px 3px rgba(26, 58, 82, 0.08);
+    --shadow-md: 0 4px 12px rgba(26, 58, 82, 0.12);
+    --shadow-lg: 0 10px 24px rgba(26, 58, 82, 0.15);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode */
+html.dark-mode {
+    --light-bg: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-primary: #f5e6d3;
+    --text-secondary: #b0b0b0;
+    --border-color: #404040;
+    --nav-bg: var(--dtc-navy-dark);
 }
 
 body {
@@ -21,6 +46,7 @@ body {
     color: var(--text-primary);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
     line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -52,25 +78,65 @@ p {
     margin-bottom: 1rem;
 }
 
-/* Size for brand */
-nav .navbar-brand {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -1px;
-}
-
-
 /* Navigation */
 nav {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%) !important;
+    background: linear-gradient(135deg, var(--nav-bg) 0%, var(--primary-light) 100%) !important;
     box-shadow: var(--shadow-md);
     border: none !important;
     padding: 1rem 0;
+    transition: background 0.3s;
+}
+
+nav.dtc-navbar {
+    background: linear-gradient(135deg, var(--nav-bg) 0%, var(--primary-light) 100%) !important;
+}
+
+nav .navbar-brand,
+nav .dtc-brand {
+    color: #ffffff !important;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+nav .dtc-brand:hover {
+    transform: scale(1.02);
+}
+
+nav .dtc-logo {
+    height: 50px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: filter 0.3s ease;
+}
+
+nav .dtc-brand .brand-text {
+    font-size: 1.25rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.5px;
+}
+
+html.dark-mode nav .dtc-logo {
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
 }
 
 nav .navbar-brand {
     color: #ffffff !important;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+nav .navbar-brand img {
+    height: 40px;
+    width: auto;
 }
 
 nav .navbar-brand .red {
@@ -92,11 +158,27 @@ nav .navbar-brand .red {
 
 .dropdown-menu {
     background: var(--card-bg);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--primary-color);
     border-radius: 8px;
     box-shadow: var(--shadow-lg);
     padding: 0.5rem 0;
     animation: slideDown 0.2s ease-out;
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+    background-color: var(--primary-color);
+    color: white;
 }
 
 @keyframes slideDown {
@@ -730,17 +812,18 @@ html {
 html.dark-mode {
     --primary-color: #4a7ba7;
     --primary-light: #6b96bb;
-    --secondary-color: #00cc7a;
-    --accent-color: #ff8787;
-    --dark-bg: #1a1f2e;
-    --light-bg: #0f1419;
-    --card-bg: #1e2433;
-    --text-primary: #e8eef5;
-    --text-secondary: #a1abb9;
-    --border-color: #2a3344;
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.5);
+    --secondary-color: #c9a961;
+    --accent-color: #f5e6d3;
+    --dark-bg: #0a0f1a;
+    --light-bg: #151d2f;
+    --card-bg: #1f2937;
+    --text-primary: #f5e6d3;
+    --text-secondary: #a8b5c6;
+    --border-color: #2a3a52;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.7);
+    --nav-bg: #0f1b2e;
 }
 
 /* Dark mode overrides for Bootstrap components */
@@ -815,6 +898,33 @@ html.dark-mode .alert-primary {
 
 html.dark-mode .breadcrumb {
     background-color: transparent;
+}
+
+html.dark-mode .breadcrumb-item {
+    color: var(--text-secondary);
+}
+
+html.dark-mode .breadcrumb-item a {
+    color: #7fb3ff;
+}
+
+html.dark-mode .breadcrumb-item a:hover {
+    color: var(--secondary-color);
+}
+
+html.dark-mode .breadcrumb-item.active {
+    color: var(--text-primary);
+}
+
+html.dark-mode nav.dtc-navbar {
+    background: linear-gradient(135deg, #0f1b2e 0%, #1a3a52 100%) !important;
+}
+
+html.dark-mode nav .dtc-brand .brand-text {
+    background: linear-gradient(135deg, #c9a961 0%, #f5e6d3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* System Membership Styles */

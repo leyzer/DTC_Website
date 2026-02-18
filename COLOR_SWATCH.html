@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Durban Tabletop Club - Color Swatch</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dtc-navy: #1a3a52;
+            --dtc-cream: #f5e6d3;
+            --dtc-gold: #c9a961;
+            --dtc-white: #ffffff;
+            --dtc-black: #1a1a1a;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            padding: 2rem;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .color-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .color-sample {
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .color-info {
+            padding: 1.5rem;
+        }
+        
+        .color-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dtc-navy);
+        }
+        
+        .color-code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin: 0.25rem 0;
+        }
+        
+        .color-code-label {
+            font-size: 0.8rem;
+            color: #666;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+        
+        h1 {
+            color: var(--dtc-navy);
+            text-align: center;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .header-accent {
+            height: 4px;
+            background: linear-gradient(90deg, var(--dtc-navy), var(--dtc-gold), var(--dtc-cream));
+            margin-bottom: 2rem;
+            border-radius: 2px;
+        }
+        
+        .usage-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .usage-section h2 {
+            color: var(--dtc-navy);
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-dtc {
+            margin: 0.5rem;
+        }
+        
+        .btn-dtc-primary {
+            background-color: var(--dtc-navy);
+            color: var(--dtc-white);
+            border: none;
+        }
+        
+        .btn-dtc-primary:hover {
+            background-color: #2d5a8c;
+            color: var(--dtc-white);
+        }
+        
+        .btn-dtc-accent {
+            background-color: var(--dtc-gold);
+            color: var(--dtc-navy);
+            border: none;
+        }
+        
+        .btn-dtc-accent:hover {
+            background-color: #dfc894;
+            color: var(--dtc-navy);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Durban Tabletop Club - Brand Colors</h1>
+        <div class="header-accent"></div>
+        
+        <div class="color-grid">
+            <!-- Primary Navy -->
+            <div class="color-card">
+                <div class="color-sample" style="background-color: var(--dtc-navy);">
+                    Primary Navy
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Primary Navy</div>
+                    <div class="color-code-label">HEX</div>
+                    <div class="color-code">#1a3a52</div>
+                    <div class="color-code-label">RGB</div>
+                    <div class="color-code">26, 58, 82</div>
+                    <div class="color-code-label">Usage</div>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Main shield color, headers, primary buttons</p>
+                </div>
+            </div>
+            
+            <!-- Cream/Beige -->
+            <div class="color-card">
+                <div class="color-sample" style="background-color: var(--dtc-cream); color: var(--dtc-navy);">
+                    Cream
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Cream/Beige</div>
+                    <div class="color-code-label">HEX</div>
+                    <div class="color-code">#f5e6d3</div>
+                    <div class="color-code-label">RGB</div>
+                    <div class="color-code">245, 230, 211</div>
+                    <div class="color-code-label">Usage</div>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Ribbons, backgrounds, light accents</p>
+                </div>
+            </div>
+            
+            <!-- Gold -->
+            <div class="color-card">
+                <div class="color-sample" style="background-color: var(--dtc-gold); color: var(--dtc-navy);">
+                    Gold
+                </div>
+                <div class="color-info">
+                    <div class="color-name">Gold/Bronze</div>
+                    <div class="color-code-label">HEX</div>
+                    <div class="color-code">#c9a961</div>
+                    <div class="color-code-label">RGB</div>
+                    <div class="color-code">201, 169, 97</div>
+                    <div class="color-code-label">Usage</div>
+                    <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Accents, borders, highlights, badges</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Usage Examples -->
+        <div class="usage-section">
+            <h2>Button Examples</h2>
+            <div>
+                <button class="btn btn-dtc btn-dtc-primary">Primary Button (Navy)</button>
+                <button class="btn btn-dtc btn-dtc-accent">Accent Button (Gold)</button>
+            </div>
+        </div>
+        
+        <!-- Extended Palette -->
+        <div class="usage-section">
+            <h2>Extended Palette</h2>
+            <div class="color-grid">
+                <div class="color-card">
+                    <div class="color-sample" style="background-color: #2d5a8c;">Light Navy</div>
+                    <div class="color-info">
+                        <div class="color-name">Light Navy</div>
+                        <div class="color-code">#2d5a8c</div>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Hover states, lighter backgrounds</p>
+                    </div>
+                </div>
+                
+                <div class="color-card">
+                    <div class="color-sample" style="background-color: #0f2d40;">Dark Navy</div>
+                    <div class="color-info">
+                        <div class="color-name">Dark Navy</div>
+                        <div class="color-code">#0f2d40</div>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Deep emphasis, dark backgrounds</p>
+                    </div>
+                </div>
+                
+                <div class="color-card">
+                    <div class="color-sample" style="background-color: #dfc894; color: var(--dtc-navy);">Light Gold</div>
+                    <div class="color-info">
+                        <div class="color-name">Light Gold</div>
+                        <div class="color-code">#dfc894</div>
+                        <p style="font-size: 0.9rem; margin: 0.5rem 0; color: #666;">Light accents, hover states</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Brand Guidelines -->
+        <div class="usage-section">
+            <h2>Brand Usage Guidelines</h2>
+            <ul>
+                <li><strong>Primary:</strong> Navy (#1a3a52) - Use for main headers, navigation, primary buttons, and dominant design elements</li>
+                <li><strong>Accent:</strong> Gold (#c9a961) - Use for highlights, borders, badges, and secondary buttons</li>
+                <li><strong>Background:</strong> Cream (#f5e6d3) - Use for light backgrounds, cards, and contrast against navy</li>
+                <li><strong>Text:</strong> Navy on white/cream for main content, white text on navy for emphasis</li>
+                <li><strong>Hover States:</strong> Use Light Navy (#2d5a8c) for interactive elements</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

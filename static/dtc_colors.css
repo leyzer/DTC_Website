@@ -1,0 +1,96 @@
+/* Durban Tabletop Club - Brand Color Swatch */
+
+:root {
+  /* Primary Colors */
+  --dtc-navy: #1a3a52;          /* Dark Navy/Teal - Main shield color */
+  --dtc-cream: #f5e6d3;         /* Light Cream/Beige - Ribbons */
+  --dtc-gold: #c9a961;          /* Gold/Bronze - Decorative accents */
+  
+  /* Secondary Colors */
+  --dtc-white: #ffffff;         /* White - Details and text */
+  --dtc-black: #1a1a1a;         /* Black - Outlines and text */
+  
+  /* Extended Palette */
+  --dtc-navy-light: #2d5a8c;    /* Lighter navy for hover states */
+  --dtc-navy-dark: #0f2d40;     /* Darker navy for emphasis */
+  --dtc-gold-light: #dfc894;    /* Lighter gold for accents */
+  --dtc-gold-dark: #9d7d45;     /* Darker gold for depth */
+  --dtc-cream-dark: #e0d4c1;    /* Slightly darker cream for contrast */
+}
+
+/* Color Swatch Utility Classes */
+.bg-dtc-navy {
+  background-color: var(--dtc-navy);
+}
+
+.bg-dtc-cream {
+  background-color: var(--dtc-cream);
+}
+
+.bg-dtc-gold {
+  background-color: var(--dtc-gold);
+}
+
+.text-dtc-navy {
+  color: var(--dtc-navy);
+}
+
+.text-dtc-gold {
+  color: var(--dtc-gold);
+}
+
+.text-dtc-cream {
+  color: var(--dtc-cream);
+}
+
+.border-dtc-navy {
+  border-color: var(--dtc-navy);
+}
+
+.border-dtc-gold {
+  border-color: var(--dtc-gold);
+}
+
+/* DTC Brand Combinations */
+.btn-dtc-primary {
+  background-color: var(--dtc-navy);
+  color: var(--dtc-white);
+  border-color: var(--dtc-navy);
+}
+
+.btn-dtc-primary:hover {
+  background-color: var(--dtc-navy-light);
+  border-color: var(--dtc-navy-light);
+}
+
+.btn-dtc-accent {
+  background-color: var(--dtc-gold);
+  color: var(--dtc-navy);
+  border-color: var(--dtc-gold);
+}
+
+.btn-dtc-accent:hover {
+  background-color: var(--dtc-gold-light);
+  border-color: var(--dtc-gold-light);
+}
+
+.card-dtc {
+  border: 2px solid var(--dtc-navy);
+  box-shadow: 0 2px 4px rgba(26, 58, 82, 0.1);
+}
+
+.card-dtc .card-header {
+  background: linear-gradient(135deg, var(--dtc-navy) 0%, var(--dtc-navy-light) 100%);
+  color: var(--dtc-white);
+  border-bottom: 3px solid var(--dtc-gold);
+}
+
+.badge-dtc-navy {
+  background-color: var(--dtc-navy);
+  color: var(--dtc-white);
+}
+
+.badge-dtc-gold {
+  background-color: var(--dtc-gold);
+  color: var(--dtc-navy);
+}

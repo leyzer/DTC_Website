@@ -197,6 +197,30 @@ def league_formats():
     return render_template("leagueFormats.html")
 
 
+@main_bp.route("/documents")
+def documents():
+    """Display club documents, policies, and rules."""
+    return render_template("documents.html")
+
+
+@main_bp.route("/events")
+def events():
+    """Display club events calendar."""
+    return render_template("events.html")
+
+
+@main_bp.route("/people")
+def people():
+    """Display club people - committee, praetors, tribunes, and partner stores."""
+    return render_template("people.html")
+
+
+@main_bp.route("/contact")
+def contact():
+    """Display contact us page with Google Form."""
+    return render_template("contact.html")
+
+
 @main_bp.route("/sample_batch_upload.csv")
 def download_sample_csv():
     """Download sample CSV file for batch upload."""

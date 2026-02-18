@@ -1,0 +1,185 @@
+{% extends "layout.html" %}
+
+{% block title %} - Contact Us {% endblock %}
+
+{% block main %}
+<div class="contact-container">
+    <div class="contact-header">
+        <h1>📬 Contact Us</h1>
+        <p class="lead">Have questions or want to get in touch? Send us a message!</p>
+    </div>
+
+    <div class="contact-wrapper">
+        <div class="contact-form-container">
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc0ySVr3dq8o5w4R2V5z7k6hZ2mY9jQ3wX1bV4cN8pL5oM6fR/viewform?embedded=true" 
+                    width="100%" 
+                    height="700" 
+                    frameborder="0" 
+                    marginheight="0" 
+                    marginwidth="0"
+                    class="google-form">
+                Loading…
+            </iframe>
+        </div>
+
+        <div class="contact-info">
+            <div class="info-section">
+                <h3>Direct Contact</h3>
+                <p>
+                    <strong>Email:</strong><br>
+                    <a href="mailto:durbantabletopclub@gmail.com">durbantabletopclub@gmail.com</a>
+                </p>
+            </div>
+
+            <div class="info-section">
+                <h3>Regular Meeting Times</h3>
+                <p>
+                    <strong>When:</strong> Every second Wednesday<br>
+                    <strong>Where:</strong> Westville German Club
+                </p>
+            </div>
+
+            <div class="info-section">
+                <h3>Response Time</h3>
+                <p>We typically respond to inquiries within 1-2 business days. For urgent matters, you can reach out directly via email.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 3px solid var(--secondary-color);
+}
+
+.contact-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.contact-header .lead {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.contact-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.contact-form-container {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.google-form {
+    border-radius: 8px;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-section {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+.info-section:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--secondary-color);
+}
+
+.info-section h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.info-section p {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+.info-section p:last-child {
+    margin-bottom: 0;
+}
+
+.info-section a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.info-section a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+html.dark-mode .contact-form-container {
+    border-color: var(--border-color);
+}
+
+html.dark-mode .info-section {
+    border-color: var(--border-color);
+}
+
+@media (max-width: 968px) {
+    .contact-wrapper {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-header h1 {
+        font-size: 2rem;
+    }
+
+    .google-form {
+        height: 600px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .contact-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .contact-header .lead {
+        font-size: 0.95rem;
+    }
+
+    .google-form {
+        height: 500px !important;
+    }
+
+    .contact-info {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

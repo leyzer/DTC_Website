@@ -31,9 +31,12 @@
 
 
     <body>
-        <nav class="navbar navbar-expand-md navbar-dark">
+        <nav class="navbar navbar-expand-md navbar-dark dtc-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/overall"><span class="red"></span> Overall</a>
+                <a class="navbar-brand dtc-brand" href="/overall">
+                    <img src="{{ url_for('static', filename='dtc_logo.svg') }}" alt="DTC Logo" class="dtc-logo">
+                    <span class="brand-text">Durban Tabletop Club</span>
+                </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar"
                         aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -63,7 +66,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="statsDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                📊 Stats
+                                Stats
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="statsDropdown">
                                     <li><a class="dropdown-item" href="/factionstats">Faction Stats</a></li>
@@ -71,9 +74,13 @@
                                     <li><a class="dropdown-item" href="/store_reports">Store Reports</a></li>
                                 </ul>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/elo_ratings">Elo Ratings</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.events') }}">Events</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.people') }}">People</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.documents') }}">Documents</a></li>
                             <li class="nav-item"><a class="nav-link" href="{{ url_for('main.league_formats') }}">League Info</a></li>
                             <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
                             {% if current_user and current_user.is_admin %}
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('leagues.league') }}">Add Results</a></li>
                                 <li class="nav-item dropdown">
@@ -84,7 +91,7 @@
                                         <li><a class="dropdown-item" href="{{ url_for('admin.manage_users') }}">Manage Users</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('admin.admin_memberships_dashboard') }}">Manage Memberships</a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" href="{{ url_for('admin.batch_upload') }}">📤 Batch Upload Results</a></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.batch_upload') }}">Batch Upload Results</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -112,7 +119,7 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="guestStatsDropdown" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
-                            📊 Stats
+                            Stats
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="guestStatsDropdown">
                                 <li><a class="dropdown-item" href="/factionstats">Faction Stats</a></li>
@@ -120,9 +127,13 @@
                                 <li><a class="dropdown-item" href="/store_reports">Store Reports</a></li>
                             </ul>
                         </li>
-                        <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/elo_ratings">Elo Ratings</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.events') }}">Events</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.people') }}">People</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.documents') }}">Documents</a></li>
                         <li class="nav-item"><a class="nav-link" href="/league_formats">League Formats</a></li>
                         <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item">
@@ -167,6 +178,15 @@
                         <li class="breadcrumb-item active">Store Reports</li>
                     {% elif request.path.startswith('/overall') %}
                         <li class="breadcrumb-item active">Overall</li>
+                    {% elif request.path.startswith('/events') %}
+                        <li class="breadcrumb-item"><a href="/overall">Overall</a></li>
+                        <li class="breadcrumb-item active">Events Calendar</li>
+                    {% elif request.path.startswith('/people') %}
+                        <li class="breadcrumb-item"><a href="/overall">Overall</a></li>
+                        <li class="breadcrumb-item active">Club People</li>
+                    {% elif request.path.startswith('/documents') %}
+                        <li class="breadcrumb-item"><a href="/overall">Overall</a></li>
+                        <li class="breadcrumb-item active">Club Documents</li>
                     {% elif request.path.startswith('/league_formats') %}
                         <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Scoring Formats</li>
@@ -188,8 +208,11 @@
                         <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
                         <li class="breadcrumb-item active">Batch Upload Results</li>
                     {% elif request.path.startswith('/about') %}
-                        <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
+                        <li class="breadcrumb-item"><a href="/overall">Overall</a></li>
                         <li class="breadcrumb-item active">About</li>
+                    {% elif request.path.startswith('/contact') %}
+                        <li class="breadcrumb-item"><a href="/overall">Overall</a></li>
+                        <li class="breadcrumb-item active">Contact Us</li>
                     {% elif request.path.startswith('/login') %}
                         <li class="breadcrumb-item active">Log In</li>
                     {% elif request.path.startswith('/register') %}
