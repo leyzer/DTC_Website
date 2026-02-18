@@ -29,7 +29,7 @@
     <!-- Member Cards Grid -->
     <div class="membership-grid" id="membershipGrid">
         {% for player in players %}
-        <div class="membership-card-wrapper" data-player-name="{{ player.user_name|lower }}">
+        <div class="membership-card-wrapper" data-player-name="{{ player.full_name|lower }}">
             <div class="membership-card {% if player.is_active %}active-member{% else %}inactive-member{% endif %}">
                 <!-- Status Indicator -->
                 <div class="member-card-header">
@@ -54,7 +54,7 @@
                                name="members[]"
                                value="{{ player.user_id }}"
                                {% if player.is_active %}checked{% endif %}>
-                        <span class="player-name">{{ player.user_name }}</span>
+                        <span class="player-name">{{ player.full_name }}</span>
                     </label>
                 </div>
             </div>

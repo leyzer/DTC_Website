@@ -1,6 +1,6 @@
 """Main and core routes: home page, about, profile."""
 import sqlite3
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, send_file
 from helpers import apology, login_required, hash_password, CURRENT_YEAR, all_seasons
 
 main_bp = Blueprint('main', __name__)
@@ -195,3 +195,14 @@ def profile():
 def league_formats():
     """Display league format options (Option A vs Option B)."""
     return render_template("leagueFormats.html")
+
+
+@main_bp.route("/sample_batch_upload.csv")
+def download_sample_csv():
+    """Download sample CSV file for batch upload."""
+    return send_file(
+        "sample_batch_upload.csv",
+        as_attachment=True,
+        download_name="sample_batch_upload.csv",
+        mimetype="text/csv"
+    )

@@ -378,33 +378,51 @@ def overall():
                 if setting_row:
                     opponent_limit = int(setting_row["setting_value"])
 
-            # Fetch all games with details for the selected year
-            games = cursor.execute("""
-                SELECT 
-                    g.game_id,
-                    g.played_on,
-                    g.points_band,
-                    g.system_id,
-                    s.system_name,
-                    gp1.player_id AS p1_id,
-                    u1.user_name AS p1_name,
-                    u1.full_name AS p1_full_name,
-                    gp1.result AS p1_result,
-                    gp2.player_id AS p2_id,
-                    u2.user_name AS p2_name,
-                    u2.full_name AS p2_full_name,
-                    gp2.result AS p2_result
-                FROM games g
-                JOIN game_participants gp1 ON g.game_id = gp1.game_id
-                JOIN game_participants gp2 ON g.game_id = gp2.game_id
-                JOIN users u1 ON gp1.player_id = u1.user_id
-                JOIN users u2 ON gp2.player_id = u2.user_id
-                JOIN systems s ON g.system_id = s.system_id
-                LEFT JOIN seasons se ON g.season_id = se.season_id
-                WHERE g.played_on BETWEEN ? AND ?
-                AND gp1.player_id < gp2.player_id
-                ORDER BY s.system_name, g.played_on
-            """, (start_date, end_date)).fetchall()
+            # Get season_id for the selected year
+            selected_season = cursor.execute(
+                "SELECT season_id FROM seasons WHERE year = ?",
+                (selected_year,)
+            ).fetchone()
+            season_id = selected_season["season_id"] if selected_season else None
+
+            # Fetch all games with details for the selected year (no membership filter)
+            if season_id:
+                games = cursor.execute("""
+                    SELECT 
+                        g.game_id,
+                        g.played_on,
+                        g.points_band,
+                        g.system_id,
+                        s.system_name,
+                        gp1.player_id AS p1_id,
+                        u1.user_name AS p1_name,
+                        u1.full_name AS p1_full_name,
+                        gp1.result AS p1_result,
+                        gp2.player_id AS p2_id,
+                        u2.user_name AS p2_name,
+                        u2.full_name AS p2_full_name,
+                        gp2.result AS p2_result
+                    FROM games g
+                    JOIN game_participants gp1 ON g.game_id = gp1.game_id
+                    JOIN game_participants gp2 ON g.game_id = gp2.game_id
+                    JOIN users u1 ON gp1.player_id = u1.user_id
+                    JOIN users u2 ON gp2.player_id = u2.user_id
+                    JOIN systems s ON g.system_id = s.system_id
+                    LEFT JOIN seasons se ON g.season_id = se.season_id
+                    WHERE g.played_on BETWEEN ? AND ?
+                    AND gp1.player_id < gp2.player_id
+                    ORDER BY s.system_name, g.played_on
+                """, (start_date, end_date)).fetchall()
+            else:
+                games = []
+            
+            # Get club members for the season to filter final leaderboard
+            club_members = set()
+            if season_id:
+                member_rows = cursor.execute("""
+                    SELECT user_id FROM club_memberships WHERE season_id = ? AND is_member = 1
+                """, (season_id,)).fetchall()
+                club_members = {row["user_id"] for row in member_rows}
 
             # Calculate points using Option A scoring with opponent limit
             systems_leaderboards = {}
@@ -469,9 +487,11 @@ def overall():
                     players[game["p2_id"]]["games"] += 1
                     players[game["p2_id"]]["opponent_games"][game["p1_id"]] += 1
             
-            # Sort players by points within each system
+            # Sort players by points within each system, only showing club members
             for system_name in systems_leaderboards:
                 players_list = list(systems_leaderboards[system_name]["players"].items())
+                # Filter to only club members
+                players_list = [(pid, pdata) for pid, pdata in players_list if pid in club_members]
                 players_list.sort(key=lambda x: x[1]["points"], reverse=True)
                 systems_leaderboards[system_name]["ranked"] = players_list
             

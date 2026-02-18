@@ -5,7 +5,7 @@ Factions
 {% endblock %}
 
 {% block main %}
-<div class="container my-4">
+<div class="faction-stats-container">
     <h3 class="mb-3">Faction Stats — {{ selected_year }}</h3>
     <form id="year" action="/factionstats" method="POST" class="mb-4">
         <div class="mb-3">
@@ -30,44 +30,46 @@ Factions
 </script>
 
 {% for system, system_factions in factions.items() %}
-    <div class="card mb-4">
-        <div class="card-header fw-bold">
-            {{ system }} — Games Played Graph
+    <div class="faction-stats-container">
+        <div class="card mb-4">
+            <div class="card-header fw-bold">
+                {{ system }} — Games Played Graph
+            </div>
+            <div class="card-body text-center">
+                <div id="graph-{{ loop.index }}" style="width:100%;max-width:700px;margin:0 auto;"></div>
+                <script>
+                    var graph_data = {{ graphs[system]|safe }};
+                    Plotly.newPlot('graph-{{ loop.index }}', graph_data.data, graph_data.layout);
+                </script>
+            </div>
         </div>
-        <div class="card-body">
-            <div id="graph-{{ loop.index }}" style="width:100%;max-width:700px"></div>
-            <script>
-                var graph_data = {{ graphs[system]|safe }};
-                Plotly.newPlot('graph-{{ loop.index }}', graph_data.data, graph_data.layout);
-            </script>
-        </div>
-    </div>
 
-    <div class="table-responsive mb-4">
-        <table class="table table-dark table-striped table-hover table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>Faction</th>
-                    <th>Games Played</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Draws</th>
-                    <th>Battle Ready</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for faction, stats in system_factions.items() %}
+        <div class="table-responsive mb-4">
+            <table class="table table-dark table-striped table-hover table-bordered align-middle">
+                <thead class="table-light">
                     <tr>
-                        <td class="fw-bold">{{ faction }}</td>
-                        <td>{{ stats.games }}</td>
-                        <td class="text-success">{{ stats.wins }}</td>
-                        <td class="text-danger">{{ stats.losses }}</td>
-                        <td class="text-secondary">{{ stats.draws }}</td>
-                        <td>{{ stats.battle_ready }}</td>
+                        <th>Faction</th>
+                        <th>Games Played</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Draws</th>
+                        <th>Battle Ready</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for faction, stats in system_factions.items() %}
+                        <tr>
+                            <td class="fw-bold">{{ faction }}</td>
+                            <td>{{ stats.games }}</td>
+                            <td class="text-success">{{ stats.wins }}</td>
+                            <td class="text-danger">{{ stats.losses }}</td>
+                            <td class="text-secondary">{{ stats.draws }}</td>
+                            <td>{{ stats.battle_ready }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endfor %}
 {% endblock %}

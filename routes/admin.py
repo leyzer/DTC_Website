@@ -1,7 +1,11 @@
 """Admin and membership management routes."""
 import sqlite3
+import csv
+import io
+from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from helpers import is_admin, login_required, CURRENT_YEAR
+from helpers import is_admin, login_required, CURRENT_YEAR, season
+from ratings import update_ratings_for_season
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -29,12 +33,12 @@ def manage_memberships():
         seasons = cursor.execute("SELECT season_id, year FROM seasons WHERE status IN ('active','archived') ORDER BY year DESC").fetchall()
 
         users = cursor.execute("""
-            SELECT u.user_id, u.user_name,
+            SELECT u.user_id, u.user_name, u.full_name,
                 COALESCE(cm.is_member, 0) AS is_member
             FROM users u
             LEFT JOIN club_memberships cm
             ON cm.user_id = u.user_id AND cm.season_id = ?
-            ORDER BY u.user_name
+            ORDER BY u.full_name
         """, (season_id,)).fetchall()
 
     return render_template("manageMemberships.html",
@@ -209,12 +213,12 @@ def admin_club_memberships():
         season_id = season_row["season_id"]
 
         club_users = cursor.execute("""
-            SELECT u.user_id, u.user_name,
+            SELECT u.user_id, u.user_name, u.full_name,
                    COALESCE(cm.is_member, 0) AS is_member
             FROM users u
             LEFT JOIN club_memberships cm
             ON cm.user_id = u.user_id AND cm.season_id = ?
-            ORDER BY u.user_name
+            ORDER BY u.full_name
         """, (season_id,)).fetchall()
 
     return render_template("admin_club_memberships.html",
@@ -243,12 +247,12 @@ def admin_system_memberships(system_id):
         system_name = system_row["system_name"]
 
         players = cursor.execute("""
-            SELECT u.user_id, u.user_name,
+            SELECT u.user_id, u.user_name, u.full_name,
                    COALESCE(sm.is_active, 0) AS is_active
             FROM users u
             LEFT JOIN system_memberships sm
             ON sm.player_id = u.user_id AND sm.system_id = ?
-            ORDER BY u.user_name
+            ORDER BY u.full_name
         """, (system_id,)).fetchall()
 
     return render_template("admin_system_memberships.html",
@@ -479,3 +483,275 @@ def league_settings():
         selected_year=selected_year,
         opponent_limit=opponent_limit
     )
+
+
+@admin_bp.route("/batch_upload", methods=["GET", "POST"])
+@login_required
+def batch_upload():
+    """Batch upload game results from CSV."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to access this page.", "danger")
+        return redirect("/")
+
+    with sqlite3.connect("GPTLeague.db") as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        systems = cursor.execute(
+            "SELECT system_id, system_name, category FROM systems ORDER BY system_name"
+        ).fetchall()
+        
+        locations = cursor.execute(
+            "SELECT location_id, name FROM locations ORDER BY name"
+        ).fetchall()
+
+    preview_data = None
+    errors = []
+
+    if request.method == "POST":
+        if "file" not in request.files:
+            flash("No file selected", "warning")
+            return redirect(url_for("admin.batch_upload"))
+
+        file = request.files["file"]
+        if file.filename == "":
+            flash("No file selected", "warning")
+            return redirect(url_for("admin.batch_upload"))
+
+        if not file.filename.endswith(".csv"):
+            flash("Please upload a CSV file", "warning")
+            return redirect(url_for("admin.batch_upload"))
+
+        try:
+            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+            csv_data = list(csv.DictReader(stream))
+            
+            if not csv_data:
+                flash("CSV file is empty", "warning")
+                return redirect(url_for("admin.batch_upload"))
+
+            # Required columns
+            if csv_data and csv_data[0]:
+                required = {"system_name", "date", "player_one", "player_two", "p1_faction", "p2_faction", "result", "location", "points_band"}
+                if not required.issubset(set(csv_data[0].keys())):
+                    flash(f"CSV missing required columns. Required: {', '.join(required)}", "warning")
+                    return redirect(url_for("admin.batch_upload"))
+
+            preview_data = []
+            year = CURRENT_YEAR()
+
+            for idx, row in enumerate(csv_data, 1):
+                preview_row = {"row": idx, "errors": []}
+
+                # Parse and validate each field
+                try:
+                    # System
+                    system_name = row.get("system_name", "").strip()
+                    system = next((s for s in systems if s["system_name"] == system_name), None)
+                    if not system:
+                        preview_row["errors"].append(f"System '{system_name}' not found")
+                    else:
+                        preview_row["system_name"] = system_name
+                        preview_row["system_id"] = system["system_id"]
+
+                    # Date
+                    date_str = row.get("date", "").strip()
+                    try:
+                        played_on = datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y-%m-%d 12:00:00")
+                        preview_row["date"] = date_str
+                    except ValueError:
+                        preview_row["errors"].append(f"Invalid date format: {date_str} (use YYYY-MM-DD)")
+
+                    # Players
+                    p1_name = row.get("player_one", "").strip()
+                    p2_name = row.get("player_two", "").strip()
+                    if p1_name == p2_name:
+                        preview_row["errors"].append("Player 1 and Player 2 cannot be the same")
+                    preview_row["player_one"] = p1_name
+                    preview_row["player_two"] = p2_name
+
+                    # Factions
+                    preview_row["p1_faction"] = row.get("p1_faction", "").strip()
+                    preview_row["p2_faction"] = row.get("p2_faction", "").strip()
+
+                    # Result
+                    result = row.get("result", "").strip()
+                    if result not in ["Player 1 Wins", "Player 2 Wins", "Drawn"]:
+                        preview_row["errors"].append(f"Invalid result: {result} (must be 'Player 1 Wins', 'Player 2 Wins', or 'Drawn')")
+                    preview_row["result"] = result
+
+                    # Location
+                    location_name = row.get("location", "").strip()
+                    location = next((l for l in locations if l["name"] == location_name), None)
+                    if not location:
+                        preview_row["errors"].append(f"Location '{location_name}' not found")
+                    else:
+                        preview_row["location"] = location_name
+                        preview_row["location_id"] = location["location_id"]
+
+                    # Points band
+                    points_band = row.get("points_band", "").strip()
+                    preview_row["points_band"] = points_band
+
+                    # Notes (optional)
+                    preview_row["notes"] = row.get("notes", "").strip()
+
+                except Exception as e:
+                    preview_row["errors"].append(str(e))
+
+                preview_data.append(preview_row)
+
+            # Store preview data in session for confirmation
+            session["batch_upload_preview"] = preview_data
+            session["batch_upload_csv_data"] = csv_data
+            session.modified = True
+            
+        except Exception as e:
+            flash(f"Error reading CSV: {str(e)}", "danger")
+            return redirect(url_for("admin.batch_upload"))
+
+    return render_template(
+        "batch_upload.html",
+        preview_data=preview_data,
+        systems=systems,
+        locations=locations
+    )
+
+
+@admin_bp.route("/batch_upload_confirm", methods=["POST"])
+@login_required
+def batch_upload_confirm():
+    """Confirm and insert batch upload results."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to perform this action.", "danger")
+        return redirect("/")
+
+    try:
+        # Get data from session
+        csv_data = session.get("batch_upload_csv_data", [])
+        if not csv_data:
+            flash("No preview data found. Please upload a file again.", "warning")
+            return redirect(url_for("admin.batch_upload"))
+
+        with sqlite3.connect("GPTLeague.db") as conn:
+            conn.row_factory = sqlite3.Row
+            cursor = conn.cursor()
+
+            year = CURRENT_YEAR()
+            season_row = cursor.execute(
+                "SELECT season_id FROM seasons WHERE year = ?", (year,)
+            ).fetchone()
+            season_id = season_row["season_id"] if season_row else 1
+
+            # Get systems, locations, factions for lookups
+            systems = cursor.execute(
+                "SELECT system_id, system_name, category FROM systems"
+            ).fetchall()
+            locations = cursor.execute(
+                "SELECT location_id, name FROM locations"
+            ).fetchall()
+
+            games_added = 0
+            errors = []
+
+            for idx, row in enumerate(csv_data, 1):
+                try:
+                    # Get system
+                    system = next((s for s in systems if s["system_name"] == row["system_name"].strip()), None)
+                    if not system:
+                        errors.append(f"Row {idx}: System not found")
+                        continue
+
+                    # Get players by username or full_name
+                    player_one = cursor.execute(
+                        "SELECT user_id FROM users WHERE user_name = ? OR full_name = ?",
+                        (row["player_one"].strip(), row["player_one"].strip())
+                    ).fetchone()
+                    player_two = cursor.execute(
+                        "SELECT user_id FROM users WHERE user_name = ? OR full_name = ?",
+                        (row["player_two"].strip(), row["player_two"].strip())
+                    ).fetchone()
+
+                    if not player_one or not player_two:
+                        errors.append(f"Row {idx}: Player not found")
+                        continue
+
+                    # Get factions
+                    p1_faction = cursor.execute(
+                        "SELECT faction_id FROM factions WHERE faction_name = ? AND system_id = ?",
+                        (row["p1_faction"].strip(), system["system_id"])
+                    ).fetchone()
+                    p2_faction = cursor.execute(
+                        "SELECT faction_id FROM factions WHERE faction_name = ? AND system_id = ?",
+                        (row["p2_faction"].strip(), system["system_id"])
+                    ).fetchone()
+
+                    if not p1_faction or not p2_faction:
+                        errors.append(f"Row {idx}: Faction not found")
+                        continue
+
+                    # Get location
+                    location = next((l for l in locations if l["name"] == row["location"].strip()), None)
+                    if not location:
+                        errors.append(f"Row {idx}: Location not found")
+                        continue
+
+                    # Parse date
+                    played_on = datetime.strptime(row["date"].strip(), "%Y-%m-%d").strftime("%Y-%m-%d 12:00:00")
+
+                    # Create game entry
+                    conn.execute("BEGIN")
+                    cursor.execute(
+                        "INSERT INTO games (season_id, system_id, played_on, location_id, points_band, notes) VALUES (?,?,?,?,?,?)",
+                        (season_id, system["system_id"], played_on, location["location_id"], 
+                         row["points_band"].strip(), row.get("notes", "").strip())
+                    )
+                    game_id = cursor.lastrowid
+
+                    # Map result
+                    result = row["result"].strip()
+                    if result == "Player 1 Wins":
+                        p1_result, p2_result = "win", "loss"
+                    elif result == "Player 2 Wins":
+                        p1_result, p2_result = "loss", "win"
+                    else:  # Drawn
+                        p1_result, p2_result = "draw", "draw"
+
+                    # Add participants
+                    cursor.execute(
+                        "INSERT INTO game_participants (game_id, player_id, faction_id, result, painting_battle_ready) VALUES (?,?,?,?,?)",
+                        (game_id, player_one["user_id"], p1_faction["faction_id"], p1_result, 0)
+                    )
+                    cursor.execute(
+                        "INSERT INTO game_participants (game_id, player_id, faction_id, result, painting_battle_ready) VALUES (?,?,?,?,?)",
+                        (game_id, player_two["user_id"], p2_faction["faction_id"], p2_result, 0)
+                    )
+
+                    # Update ratings
+                    update_ratings_for_season(season_id, system["system_id"], system["category"], conn)
+                    conn.commit()
+                    games_added += 1
+
+                except Exception as e:
+                    conn.rollback()
+                    errors.append(f"Row {idx}: {str(e)}")
+                    continue
+
+            # Clear session data
+            session.pop("batch_upload_preview", None)
+            session.pop("batch_upload_csv_data", None)
+            session.modified = True
+
+            flash(f"✅ Successfully added {games_added} games", "success")
+            if errors:
+                error_msg = "; ".join(errors[:5])  # Show first 5 errors
+                if len(errors) > 5:
+                    error_msg += f"; ... and {len(errors) - 5} more"
+                flash(f"⚠️ Some rows had errors: {error_msg}", "warning")
+
+    except Exception as e:
+        flash(f"Error processing batch upload: {str(e)}", "danger")
+
+    return redirect(url_for("admin.batch_upload"))

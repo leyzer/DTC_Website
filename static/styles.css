@@ -335,6 +335,12 @@ td.winner {
     padding: 0 1rem;
 }
 
+.faction-stats-container {
+    margin: 2rem auto;
+    max-width: 800px;
+    padding: 0 1rem;
+}
+
 .center-container {
     display: flex;
     justify-content: center;

@@ -60,19 +60,19 @@
                             </li>
 
                             
-                            <li class="nav-item"><a class="nav-link" href="/factionstats">Faction Stats</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/playerstats">Player Stats</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/store_reports">Store Reports</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="leagueInfoDropdown" role="button"
+                                <a class="nav-link dropdown-toggle" href="#" id="statsDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                League Info
+                                📊 Stats
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="leagueInfoDropdown">
-                                    <li><a class="dropdown-item" href="{{ url_for('main.league_formats') }}">Scoring Formats</a></li>
+                                <ul class="dropdown-menu" aria-labelledby="statsDropdown">
+                                    <li><a class="dropdown-item" href="/factionstats">Faction Stats</a></li>
+                                    <li><a class="dropdown-item" href="/playerstats">Player Stats</a></li>
+                                    <li><a class="dropdown-item" href="/store_reports">Store Reports</a></li>
                                 </ul>
                             </li>
+                            <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('main.league_formats') }}">League Info</a></li>
                             <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                             {% if current_user and current_user.is_admin %}
                                 <li class="nav-item"><a class="nav-link" href="{{ url_for('leagues.league') }}">Add Results</a></li>
@@ -83,6 +83,8 @@
                                     <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                         <li><a class="dropdown-item" href="{{ url_for('admin.manage_users') }}">Manage Users</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('admin.admin_memberships_dashboard') }}">Manage Memberships</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.batch_upload') }}">📤 Batch Upload Results</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -107,8 +109,18 @@
                     {% else %}
                         <!-- guest nav -->
                          <ul class="navbar-nav me-auto mt-2">
-                        <li class="nav-item"><a class="nav-link" href="/factionstats">Faction Stats</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/">📊 Elo Ratings</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="guestStatsDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            📊 Stats
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="guestStatsDropdown">
+                                <li><a class="dropdown-item" href="/factionstats">Faction Stats</a></li>
+                                <li><a class="dropdown-item" href="/playerstats">Player Stats</a></li>
+                                <li><a class="dropdown-item" href="/store_reports">Store Reports</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="nav-item"><a class="nav-link" href="/league_formats">League Formats</a></li>
                         <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                         </ul>
@@ -143,7 +155,7 @@
             <div class="container-fluid">
                 <ol class="breadcrumb mb-0">
                     {% if request.path == '/' or request.path.startswith('/overall') %}
-                        <li class="breadcrumb-item active">⚔️ Overall</li>
+                        <li class="breadcrumb-item active">Overall</li>
                     {% elif request.path.startswith('/factionstats') %}
                         <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Faction Stats</li>
@@ -154,7 +166,7 @@
                         <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Store Reports</li>
                     {% elif request.path.startswith('/overall') %}
-                        <li class="breadcrumb-item active">⚔️ Overall</li>
+                        <li class="breadcrumb-item active">Overall</li>
                     {% elif request.path.startswith('/league_formats') %}
                         <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">Scoring Formats</li>
@@ -172,6 +184,9 @@
                     {% elif request.path.startswith('/admin/manage_users') %}
                         <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
                         <li class="breadcrumb-item active">Manage Users</li>
+                    {% elif request.path.startswith('/admin/batch_upload') %}
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
+                        <li class="breadcrumb-item active">Batch Upload Results</li>
                     {% elif request.path.startswith('/about') %}
                         <li class="breadcrumb-item"><a href="/elo_ratings">📊 Elo Ratings</a></li>
                         <li class="breadcrumb-item active">About</li>

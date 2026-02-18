@@ -36,7 +36,7 @@
 
     <div class="membership-grid" id="membershipGrid">
         {% for user in club_users %}
-        <div class="membership-card-wrapper" data-player-name="{{ user.user_name|lower }}">
+        <div class="membership-card-wrapper" data-player-name="{{ user.full_name|lower }}">
             <div class="membership-card {% if user.is_member %}active-member{% else %}inactive-member{% endif %}">
                 <div class="member-card-header">
                     <div class="member-status-indicator">
@@ -51,7 +51,7 @@
                     <label class="member-checkbox-label">
                         <input type="checkbox" class="member-checkbox" name="members[]"
                                value="{{ user.user_id }}" {% if user.is_member %}checked{% endif %}>
-                        <span class="player-name">{{ user.user_name }}</span>
+                        <span class="player-name">{{ user.full_name }}</span>
                     </label>
                 </div>
             </div>

@@ -1,0 +1,89 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+venv/
+ENV/
+env/
+.venv
+prod/
+
+# IDE and Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Database
+*.db
+GPTLeague.db
+*.sqlite
+*.sqlite3
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Flask
+instance/
+.webassets-cache
+flask_session/
+
+# Temporary Files
+tmp*/
+tmpclaude-*/
+*.tmp
+*.bak
+*.backup
+
+# OS Files
+.DS_Store
+Thumbs.db
+.directory
+
+# IDE Runtime
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/
+
+# CSV data files (if they're processed/generated)
+# Uncomment if needed, otherwise keep tracked for version control
+# cleaned_games.csv
+# games.csv
+# games2025.csv
+# players.csv
+# example_*.csv
+
+# Node modules (if any frontend build tools are added)
+node_modules/
