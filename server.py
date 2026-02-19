@@ -2,10 +2,19 @@
 Warhammer 40k League Application
 Main Flask application entry point and configuration.
 """
+import os
 import sqlite3
+import logging
 from flask import Flask, session
 from flask_session import Session
 from routes import register_blueprints
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 # Scoring constants (base of 100 values)
@@ -82,4 +91,6 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Only enable debug mode in development
+    debug_mode = os.getenv('FLASK_ENV', 'production') == 'development'
+    app.run(debug=debug_mode)

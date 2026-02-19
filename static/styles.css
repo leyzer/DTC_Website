@@ -36,7 +36,7 @@ html.dark-mode {
     --light-bg: #1a1a1a;
     --card-bg: #2d2d2d;
     --text-primary: #f5e6d3;
-    --text-secondary: #b0b0b0;
+    --text-secondary: #d0d0d0;
     --border-color: #404040;
     --nav-bg: var(--dtc-navy-dark);
 }
@@ -896,8 +896,67 @@ html.dark-mode .alert-primary {
     color: #87ceeb;
 }
 
+html.dark-mode .text-success {
+    color: #7eff9f !important;
+}
+
+html.dark-mode .text-danger {
+    color: #ff9999 !important;
+}
+
+html.dark-mode .text-warning {
+    color: #ffeb7f !important;
+}
+
+html.dark-mode .text-info {
+    color: #7fb3ff !important;
+}
+
+/* Dark mode table status classes */
+html.dark-mode .table-success {
+    background-color: #1a3a2a !important;
+    color: #7eff9f !important;
+}
+
+html.dark-mode .table-success td {
+    color: #7eff9f !important;
+}
+
+html.dark-mode .table-info {
+    background-color: #1a2a3a !important;
+    color: #7fb3ff !important;
+}
+
+html.dark-mode .table-info td {
+    color: #7fb3ff !important;
+}
+
+html.dark-mode .table-warning {
+    background-color: #3a3a1a !important;
+    color: #ffeb7f !important;
+}
+
+html.dark-mode .table-warning td {
+    color: #ffeb7f !important;
+}
+
+html.dark-mode .table-danger {
+    background-color: #3a1a1a !important;
+    color: #ff9999 !important;
+}
+
+html.dark-mode .table-danger td {
+    color: #ff9999 !important;
+}
+
 html.dark-mode .breadcrumb {
-    background-color: transparent;
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+html.dark-mode .bg-light {
+    background-color: var(--card-bg) !important;
 }
 
 html.dark-mode .breadcrumb-item {
@@ -925,6 +984,31 @@ html.dark-mode nav .dtc-brand .brand-text {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+}
+
+/* Dark mode table styles */
+html.dark-mode .table-dark {
+    background-color: var(--card-bg);
+}
+
+html.dark-mode .table th,
+html.dark-mode .table td {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+html.dark-mode .table tbody tr:hover {
+    background-color: #333333;
+}
+
+html.dark-mode .non-member {
+    color: #a0b0c0;
+    font-style: italic;
+}
+
+html.dark-mode .club-member {
+    color: #7fb3ff;
+    font-weight: 600;
 }
 
 /* System Membership Styles */

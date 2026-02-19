@@ -7,6 +7,9 @@ for GPTLeague. Keeps all rating-related logic separate from Flask routes.
 
 import sqlite3
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def update_ratings_for_season(season_id, system_id, category, connection):
@@ -48,7 +51,7 @@ def update_ratings_for_season(season_id, system_id, category, connection):
     base_rating_map = {row[0]: row[2] for row in k_factor_rules}
 
     if not k_factor_map:
-        print(f"No K-factor rules found for category {category}")
+        logger.warning(f"No K-factor rules found for category {category}")
         return
 
     # Use the first available base_rating for initialization
@@ -78,7 +81,7 @@ def update_ratings_for_season(season_id, system_id, category, connection):
         # Get k_factor for this specific game's points_band
         k_factor = k_factor_map.get(points_band)
         if not k_factor:
-            print(f"Warning: no k_factor found for points_band '{points_band}', skipping game {game_id}")
+            logger.warning(f"No k_factor found for points_band '{points_band}', skipping game {game_id}")
             continue
 
         r1, r2 = current_ratings[p1_id], current_ratings[p2_id]

@@ -1,11 +1,14 @@
 """Statistics routes: faction stats, player stats, store reports."""
 import sqlite3
 import json
+import logging
 import plotly
 import plotly.graph_objs as go
 from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from helpers import apology, login_required, CURRENT_YEAR, season, all_seasons
+
+logger = logging.getLogger(__name__)
 
 stats_bp = Blueprint('stats', __name__)
 
@@ -79,7 +82,7 @@ def factionstats():
                 values = [f["games"] for f in system_factions.values()]
                 fig = go.Figure(data=[go.Pie(labels=labels, values=values)])                
                 graphs[system] = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-                print(system, graphs[system])
+                logger.debug(f"Generated graph for system {system}")
             
             years_seasons = all_seasons()
 
@@ -91,7 +94,7 @@ def factionstats():
                  selected_year=selected_year
                 )
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error in factionstats: {str(e)}")
         flash('An error occurred loading faction stats', 'warning')
         return apology("An error occurred loading faction stats", 400)
 
@@ -217,7 +220,7 @@ def playerstats():
             )
         
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error in playerstats: {str(e)}")
         flash('An error occurred loading player stats', 'warning')
         return apology("An error occurred loading player stats", 400)
 
@@ -312,7 +315,7 @@ def store_reports():
             )
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error in store_reports: {str(e)}")
         flash("An error occurred loading store reports", "warning")
         return redirect("/")
 
@@ -507,7 +510,7 @@ def overall():
             )
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error in league results: {str(e)}")
         flash("An error occurred loading Option A results", "warning")
         return redirect("/")
 

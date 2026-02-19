@@ -1,9 +1,12 @@
 import bcrypt
 import re
 import sqlite3
+import logging
 
 from flask import redirect, render_template, session
 from functools import wraps
+
+logger = logging.getLogger(__name__)
 
 def apology(message, code=400):
     """Render message as an apology to user."""
@@ -27,6 +30,31 @@ def hash_password(password):
 def check_password(password, hashed_password):
     # Check hashed password against entered password
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
+
+def validate_password_strength(password):
+    """
+    Validate password strength requirements.
+    Returns (is_valid, message) tuple.
+    
+    Requirements:
+    - At least 8 characters
+    - At least one uppercase letter
+    - At least one lowercase letter
+    - At least one number
+    """
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters"
+    
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter"
+    
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter"
+    
+    if not re.search(r'[0-9]', password):
+        return False, "Password must contain at least one number"
+    
+    return True, "Password is valid"
 
 
 def login_required(f):
@@ -59,7 +87,7 @@ def CURRENT_YEAR():
             year = cursor.execute("SELECT year FROM seasons ORDER BY year DESC LIMIT 1").fetchone()
             return year[0] if year else None
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Database error in CURRENT_YEAR: {str(e)}")
         return None
 def season(year):
     try:
@@ -74,21 +102,8 @@ def season(year):
                 return None
             
     except Exception as e:
-        print(f"Error: {e}")      
-        return None     
-    
-def all_seasons():
-    try:
-        with sqlite3.connect('GPTLeague.db') as connection:
-            connection.row_factory = sqlite3.Row
-            cursor = connection.cursor()
-            return cursor.execute(
-                "SELECT year FROM seasons WHERE status IN ('active','archived') ORDER BY year DESC"
-            ).fetchall()
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
- 
+        logger.error(f"Database error in season: {str(e)}")
+        return None
     
 
 def check_account(username, password):
@@ -110,7 +125,7 @@ def check_account(username, password):
                 stored_hash = stored_hash.encode('utf-8')
             return check_password(password, stored_hash)
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Database error in check_account: {str(e)}")
         return False
     
 
