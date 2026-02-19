@@ -1,23 +1,28 @@
 """Authentication routes: login, register, logout, password reset."""
+import logging
 import sqlite3
 import secrets
 from datetime import datetime, timedelta
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from helpers import apology, hash_password, check_password, check_account, CURRENT_YEAR
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, current_app
+from helpers import (apology, hash_password, check_password, check_account, CURRENT_YEAR,
+                     is_valid_email, sanitize_username, sanitize_name, validate_password_strength)
 
+logger = logging.getLogger(__name__)
 auth_bp = Blueprint('auth', __name__)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
+    limiter = current_app.limiter
+    
+    @limiter.limit("10 per minute")
+    def _login_post():
         try:
             connection = sqlite3.connect('GPTLeague.db')
             cursor = connection.cursor()
-            print("Connected to SQLite")
-            
-            username = request.form.get("username").lower()
-            password = request.form.get("password")
+
+            username = request.form.get("username", "").lower().strip()
+            password = request.form.get("password", "")
             
             if not username:
                 return apology("username required", 200)
@@ -26,19 +31,21 @@ def login():
 
             row = cursor.execute("SELECT user_id FROM users WHERE user_name = ?", (username,)).fetchone()
 
-            if not row or check_account(username, password) == False:
-                return apology("incorrect username or Password", 400)
+            if not row or not check_account(username, password):
+                return apology("Invalid username or password", 400)
 
             session["user_id"] = row[0]
             return redirect("/")
         
-        except Exception as e:
-            print(f"Error: {e}")            
+        except Exception:
+            logger.error("Error during login")
             return apology("An error occurred during login", 400)
         finally:    
             if connection:
                 connection.close()
 
+    if request.method == "POST":
+        return _login_post()
     else:
         return render_template("login.html")
 
@@ -52,39 +59,40 @@ def logout():
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
+    limiter = current_app.limiter
+
+    @limiter.limit("5 per hour")
+    def _register_post():
         try:
             connection = sqlite3.connect('GPTLeague.db')
             cursor = connection.cursor()
-            print("Connected to SQLite")
 
-            username = request.form.get("username", "").lower().strip()
+            username = sanitize_username(request.form.get("username", ""))
+            if not username:
+                flash("Invalid username format. Use only letters, numbers, and underscores (max 50 chars).", "warning")
+                return redirect("/register")
+
             email = request.form.get("email", "").lower().strip()
+            if not is_valid_email(email):
+                flash("Invalid email format", "warning")
+                return redirect("/register")
+
+            fullname = sanitize_name(request.form.get("fullname", ""))
+            if not fullname:
+                flash("Invalid name format. Use only letters, spaces, hyphens, and apostrophes.", "warning")
+                return redirect("/register")
 
             existing_user = cursor.execute(
                 "SELECT * FROM users WHERE user_name = ? OR email = ?",
                 (username, email)
             ).fetchone()
 
-            if not username or not email:
-                flash("Username and email are required", "warning")
-                return redirect("/register")
-
             if existing_user:
-                if existing_user["user_name"] == username:
-                    flash("Username already exists", "warning")
-                elif existing_user["email"] == email:
-                    flash("Email already exists", "warning")
+                flash("Username or email already registered", "warning")
                 return redirect("/register")
 
-            fullname = request.form.get("fullname")
-            if not fullname:
-                flash('Full name is required', 'warning')
-                return redirect("/register")
-            fullname = fullname.title()
-
-            password = request.form.get("password")
-            confirmation = request.form.get("confirmation")
+            password = request.form.get("password", "")
+            confirmation = request.form.get("confirmation", "")
 
             if not password or not confirmation:
                 flash('Password and confirmation are required', 'warning')
@@ -93,9 +101,14 @@ def register():
                 flash('Password and confirmation do not match', 'warning')
                 return redirect("/register")
 
+            is_valid, error_msg = validate_password_strength(password)
+            if not is_valid:
+                flash(error_msg, 'warning')
+                return redirect("/register")
+
             hashed_password = hash_password(password)
             cursor.execute("INSERT INTO users (user_name, full_name, email, password_hash) VALUES (?,?,?,?)",
-            (username, fullname, email, hashed_password))
+            (username, fullname.title(), email, hashed_password))
             userID = cursor.execute("SELECT user_id FROM users WHERE user_name = ?", (username,)).fetchone()
             
             # Assign role: first user is admin, others are user
@@ -105,18 +118,20 @@ def register():
             connection.commit()
             cursor.close()        
             connection.close()
-            print("Connection closed.")
 
             flash("Registered successfully!", "success")
             return redirect("/")
 
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            logger.error("Error during registration")
             flash('An error occurred during registration', 'danger')
             return redirect(url_for('auth.register'))
         finally:
             if connection:
                 connection.close()
+
+    if request.method == "POST":
+        return _register_post()
     else:
         return render_template("register.html")
 
@@ -134,8 +149,8 @@ def reset_password():
                 if request.method == "GET":  
                     return render_template("reset_password.html") 
                 else:
-                    password = request.form.get("password")
-                    confirmation = request.form.get("confirmation")
+                    password = request.form.get("password", "")
+                    confirmation = request.form.get("confirmation", "")
 
                     if not password or not confirmation:
                         flash('Password and confirmation are required', 'warning')
@@ -144,14 +159,19 @@ def reset_password():
                         flash('Password and confirmation do not match', 'warning')
                         return redirect("reset_password.html")
 
+                    is_valid, error_msg = validate_password_strength(password)
+                    if not is_valid:
+                        flash(error_msg, 'warning')
+                        return redirect(url_for('auth.reset_password'))
+
                     hashed_password = hash_password(password)
                     cursor.execute("UPDATE users SET password_hash = ? WHERE user_id = ?", (hashed_password, user_id))
                     connection.commit()
                 
                 return redirect("/profile")              
 
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            logger.error("Error resetting password")
             flash('An error occurred resetting password', 'warning')
             return apology("An error occurred resetting password", 400)
     
@@ -205,8 +225,8 @@ def endseason():
                         connection.commit()
                     
                     return redirect("/profile")
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            logger.error("Error ending season")
             flash('An error occurred ending season', 'warning')
             return apology("An error occurred ending season", 400)
     
@@ -236,22 +256,19 @@ def claim_account():
                 (username,)
             ).fetchone()
 
-            if not user:
-                flash("Username not found", "warning")
+            if not user or not user["is_provisional"]:
+                flash("Invalid username or account status", "warning")
                 return redirect("/claim_account")
-
-            if not user["is_provisional"]:
-                flash("This account has already been claimed", "warning")
-                return redirect("/login")
 
             # Verify temporary password
             if not check_password(temp_password, user["password_hash"]):
-                flash("Incorrect temporary password", "warning")
+                flash("Invalid credentials", "warning")
                 return redirect("/claim_account")
 
-            # Validate new password
-            if len(new_password) < 6:
-                flash("Password must be at least 6 characters", "warning")
+            # Validate new password strength
+            is_valid, error_msg = validate_password_strength(new_password)
+            if not is_valid:
+                flash(error_msg, "warning")
                 return redirect("/claim_account")
 
             if new_password != confirmation:
@@ -269,8 +286,8 @@ def claim_account():
             flash("Account claimed successfully! You can now log in with your new password.", "success")
             return redirect("/login")
 
-        except Exception as e:
-            print(f"Error: {e}")
+        except Exception:
+            logger.error("Error claiming account")
             flash("An error occurred claiming your account", "warning")
             return redirect("/claim_account")
         finally:

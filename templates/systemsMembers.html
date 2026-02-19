@@ -9,6 +9,7 @@
         </div>
         <div class="card-body">
             <form method="post" action="{{ url_for('admin.update_system_memberships', system_id=system_id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="row">
                     {% for player in players %}
                     <div class="col-md-6 mb-3">

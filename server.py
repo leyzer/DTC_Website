@@ -2,11 +2,28 @@
 Warhammer 40k League Application
 Main Flask application entry point and configuration.
 """
+import logging
+import os
+import secrets
 import sqlite3
+
 from flask import Flask, session
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
 from routes import register_blueprints
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # Scoring constants (base of 100 values)
 MAXVALUE_PAINTED = 10
@@ -53,12 +70,30 @@ def inject_current_user():
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
-    
-    # Configure session
+
+    # SECRET_KEY - critical for session security
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
+
+    # Session configuration
     app.config["SESSION_PERMANENT"] = False
     app.config["SESSION_TYPE"] = "filesystem"
+    app.config["SESSION_COOKIE_SECURE"] = True
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
     Session(app)
-    
+
+    # CSRF protection
+    CSRFProtect(app)
+
+    # Rate limiting
+    limiter = Limiter(
+        app=app,
+        key_func=get_remote_address,
+        default_limits=["200 per day", "50 per hour"],
+        storage_uri="memory://"
+    )
+    app.limiter = limiter
+
     # Register blueprints
     register_blueprints(app)
     
@@ -69,10 +104,14 @@ def create_app():
     # Register after_request handler
     @app.after_request
     def after_request(response):
-        """Ensure responses aren't cached"""
+        """Ensure responses aren't cached and add security headers."""
         response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         response.headers["Expires"] = 0
         response.headers["Pragma"] = "no-cache"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
     
     return app
@@ -82,4 +121,5 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    debug_mode = os.environ.get("FLASK_ENV") == "development"
+    app.run(debug=debug_mode)

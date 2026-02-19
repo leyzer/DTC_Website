@@ -42,12 +42,17 @@ prod/
 
 # Database
 *.db
+*.db-journal
+*.db-shm
+*.db-wal
 GPTLeague.db
 *.sqlite
 *.sqlite3
 
 # Environment Variables
 .env
+.env.*
+!.env.example
 .env.local
 .env.*.local
 

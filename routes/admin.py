@@ -1,12 +1,14 @@
 """Admin and membership management routes."""
+import logging
 import sqlite3
 import csv
 import io
 from datetime import datetime
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from helpers import is_admin, login_required, CURRENT_YEAR, season
+from flask import Blueprint, flash, make_response, redirect, render_template, request, session, url_for
+from helpers import is_admin, login_required, CURRENT_YEAR, season, validate_password_strength
 from ratings import update_ratings_for_season
 
+logger = logging.getLogger(__name__)
 admin_bp = Blueprint('admin', __name__)
 
 
@@ -338,10 +340,12 @@ def manage_users():
                 )
                 conn.commit()
                 
-                flash(f"User created! Username: {username} | Temporary Password: {temp_password} | They can claim their account and change password", "success")
-                return redirect(url_for("admin.manage_users"))
+                flash(f"User '{username}' created successfully. Temporary password has been generated - view it on the next page (this will only be shown once).", "success")
+                new_user = cursor.execute("SELECT user_id FROM users WHERE user_name = ?", (username,)).fetchone()
+                return redirect(url_for("admin.reset_temp_password", user_id=new_user["user_id"]))
             except Exception as e:
                 conn.rollback()
+                logger.error("Error creating user in admin manage_users")
                 flash(f"Error creating user: {str(e)}", "danger")
                 return redirect(url_for("admin.manage_users"))
 
@@ -382,7 +386,11 @@ def reset_temp_password(user_id):
         cursor.execute("UPDATE users SET password_hash = ? WHERE user_id = ?", (hashed_password, user_id))
         conn.commit()
 
-    return render_template("temp_password_display.html", user=user, temp_password=temp_password)
+    response = make_response(render_template("temp_password_display.html", user=user, temp_password=temp_password))
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 
 @admin_bp.route("/league_settings", methods=["GET", "POST"])

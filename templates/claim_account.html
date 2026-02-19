@@ -15,6 +15,7 @@
                     </p>
 
                     <form method="post" action="{{ url_for('auth.claim_account') }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username" placeholder="your_username" required autofocus>
@@ -31,8 +32,8 @@
 
                         <div class="mb-3">
                             <label for="new_password" class="form-label">New Password</label>
-                            <input type="password" class="form-control" id="new_password" name="new_password" placeholder="••••••••" required>
-                            <small class="form-text text-muted">At least 6 characters. Choose something secure!</small>
+                            <input type="password" class="form-control" id="new_password" name="new_password" placeholder="••••••••" minlength="12" required>
+                            <small class="form-text text-muted">At least 12 characters with uppercase, lowercase, number, and special character</small>
                         </div>
 
                         <div class="mb-4">

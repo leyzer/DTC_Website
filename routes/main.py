@@ -1,8 +1,10 @@
 """Main and core routes: home page, about, profile."""
+import logging
 import sqlite3
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for, send_file
 from helpers import apology, login_required, hash_password, CURRENT_YEAR, all_seasons
 
+logger = logging.getLogger(__name__)
 main_bp = Blueprint('main', __name__)
 
 
@@ -110,7 +112,7 @@ def elo_ratings():
             )
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error("An error occurred in main route")
         return apology("An error occurred", 400)
 
 
@@ -186,7 +188,7 @@ def profile():
                 return redirect("/profile")        
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error("An error occurred loading profile")
         flash('An error occurred loading profile', 'warning')
         return apology("An error occurred loading profile", 400)
 

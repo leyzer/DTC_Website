@@ -16,6 +16,7 @@
 </div>
 
 <form method="post" action="{{ url_for('admin.update_system_memberships', system_id=system_id) }}" id="membershipForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Search/Filter -->
     <div class="mb-4">
         <input type="text"

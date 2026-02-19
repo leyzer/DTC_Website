@@ -11,6 +11,7 @@
     
     <div class="solid">
         <form action="{{ url_for('leagues.league') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div>
                 Game System
                 <select name="system" required>

@@ -6,6 +6,7 @@
 
 {% block main %}
 <form action="/endseason" method="post">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 	<h3>Confirm end of Season</h3>
 	<div class="mb-3">
 		<input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">

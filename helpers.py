@@ -1,9 +1,12 @@
 import bcrypt
+import logging
 import re
 import sqlite3
 
 from flask import redirect, render_template, session
 from functools import wraps
+
+logger = logging.getLogger(__name__)
 
 def apology(message, code=400):
     """Render message as an apology to user."""
@@ -43,8 +46,47 @@ def login_required(f):
     return decorated_function
 
 def is_valid_email(email):
-    pattern = r'^\S+@\S+\.\S+$'
+    """Validate email format with robust regex."""
+    if not email or len(email) > 254:
+        return False
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     return bool(re.match(pattern, email))
+
+
+def sanitize_username(username):
+    """Sanitize username - alphanumeric and underscore only."""
+    if not username or len(username) > 50:
+        return None
+    if not re.match(r'^[a-zA-Z0-9_]+$', username):
+        return None
+    return username.lower().strip()
+
+
+def sanitize_name(name):
+    """Sanitize full name - remove dangerous characters."""
+    if not name or len(name) > 100:
+        return None
+    if not re.match(r'^[a-zA-Z\s\-\']+$', name):
+        return None
+    return name.strip()
+
+
+def validate_password_strength(password):
+    """
+    Validate password meets security requirements.
+    Returns (is_valid, error_message)
+    """
+    if len(password) < 12:
+        return False, "Password must be at least 12 characters long"
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain at least one uppercase letter"
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain at least one lowercase letter"
+    if not re.search(r'[0-9]', password):
+        return False, "Password must contain at least one number"
+    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+        return False, "Password must contain at least one special character"
+    return True, ""
 
 
 def CURRENT_YEAR():
@@ -58,9 +100,10 @@ def CURRENT_YEAR():
             cursor = connection.cursor()
             year = cursor.execute("SELECT year FROM seasons ORDER BY year DESC LIMIT 1").fetchone()
             return year[0] if year else None
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception:
+        logger.error("Database error in CURRENT_YEAR")
         return None
+
 def season(year):
     try:
         with sqlite3.connect('GPTLeague.db') as connection:
@@ -73,8 +116,8 @@ def season(year):
             else:
                 return None
             
-    except Exception as e:
-        print(f"Error: {e}")      
+    except Exception:
+        logger.error("Database error in season")
         return None     
     
 def all_seasons():
@@ -85,8 +128,8 @@ def all_seasons():
             return cursor.execute(
                 "SELECT year FROM seasons WHERE status IN ('active','archived') ORDER BY year DESC"
             ).fetchall()
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception:
+        logger.error("Database error in all_seasons")
         return []
  
     
@@ -109,8 +152,8 @@ def check_account(username, password):
             if isinstance(stored_hash, str):
                 stored_hash = stored_hash.encode('utf-8')
             return check_password(password, stored_hash)
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception:
+        logger.error("Database error in check_account")
         return False
     
 

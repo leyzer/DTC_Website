@@ -1,10 +1,12 @@
 """Leagues and game management routes."""
+import logging
 import sqlite3
 from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 from helpers import apology, is_admin, login_required, CURRENT_YEAR, season
 from ratings import update_ratings_for_season
 
+logger = logging.getLogger(__name__)
 leagues_bp = Blueprint('leagues', __name__)
 
 
@@ -112,7 +114,7 @@ def league():
                         (season_id, system_id, played_on_str, location, points_band, notes)
                     )
                     game_id = cursor.lastrowid
-                    print("Game created")
+                    logger.debug("Game created")
 
                     # Result mapping
                     if result == "Player 1 Wins":
@@ -127,14 +129,14 @@ def league():
                         "INSERT INTO game_participants (game_id, player_id, faction_id, result, painting_battle_ready) VALUES (?,?,?,?,?)",
                         (game_id, player_one, p1_faction, p1_result, p1_battle_ready)
                     )
-                    print("Player 1 inserted")
+                    logger.debug("Player 1 inserted")
 
                     # Player 2
                     cursor.execute(
                         "INSERT INTO game_participants (game_id, player_id, faction_id, result, painting_battle_ready) VALUES (?,?,?,?,?)",
                         (game_id, player_two, p2_faction, p2_result, p2_battle_ready)
                     )
-                    print("Player 2 inserted")
+                    logger.debug("Player 2 inserted")
 
                     # Update ratings
                     update_ratings_for_season(season_id, system_id, system_category, connection)
@@ -165,7 +167,7 @@ def league():
             )
 
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error("An error occurred in league route")
         flash('An error occurred loading league', 'warning')
         return redirect("/league")
 
@@ -352,8 +354,7 @@ def gamesPlayed(system_id):
             )
 
     except Exception as e:
-        import traceback
-        print(traceback.format_exc())
+        logger.error("An error occurred in games played route")
         flash('An error occurred loading Games Played listing', 'warning')
         return apology("An error occurred loading Games Played listing", 400)
 

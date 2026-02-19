@@ -14,6 +14,7 @@
                 </div>
                 <div class="card-body p-4">
                     <form action="{{ url_for('auth.register') }}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input autocomplete="off" autofocus class="form-control" id="username" name="username" placeholder="your_username" type="text" required>
@@ -30,7 +31,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input class="form-control" id="password" name="password" placeholder="••••••••" type="password" required>
-                            <small class="form-text text-muted">At least 6 characters</small>
+                            <small class="form-text text-muted">At least 12 characters with uppercase, lowercase, number, and special character</small>
                         </div>
                         <div class="mb-4">
                             <label for="confirmation" class="form-label">Confirm Password</label>

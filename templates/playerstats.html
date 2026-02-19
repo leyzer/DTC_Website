@@ -13,6 +13,7 @@ Player Stats
         </div>
         <div class="card-body">
             <form id="playerForm" action="{{ url_for('stats.playerstats') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="myPlayer" class="form-label">Select Player</label>

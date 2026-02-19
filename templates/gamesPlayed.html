@@ -11,6 +11,7 @@ Games Played
 
         {% if admin %}
         <form method="post" action="{{ url_for('leagues.recalc_ratings') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="season_id" value="{{ selected_year }}">
             <input type="hidden" name="system_id" value="{{ system_id }}">
             <button type="submit">Recalculate Ratings</button>
@@ -21,6 +22,7 @@ Games Played
 
 
         <form id="yearForm" action="{{ url_for('leagues.gamesPlayed', system_id=system_id) }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <select id="yearSelect" name="year" class="form-select w-auto d-inline">
                 <option value="All" {% if selected_year == 'All' %}selected{% endif %}>All</option>
                 {% for season in years %}
@@ -42,6 +44,7 @@ Games Played
     </div>
 
     <form id="data" action="{{ url_for('leagues.gamesPlayed', system_id=system_id) }}" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="table table-dark">
             <table class="table table-striped table-hover text-center">
                 <thead>
@@ -109,6 +112,7 @@ Games Played
                         {% if admin %}
                         <td>
                             <form method="post" action="/toggleIgnored">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="game_id" value="{{ game_id }}">
                                 <label>
                                     <input type="checkbox" name="ignored" value="1"

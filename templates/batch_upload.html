@@ -39,6 +39,7 @@
         </div>
         <div class="card-body">
             <form method="post" enctype="multipart/form-data" id="uploadForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <div class="mb-3">
                     <label for="csvFile" class="form-label">Select CSV File</label>
                     <input type="file" class="form-control" id="csvFile" name="file" accept=".csv" required>
@@ -123,6 +124,7 @@
             </div>
 
             <form method="post" action="{{ url_for('admin.batch_upload_confirm') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-success btn-lg">
                     <i class="bi bi-upload"></i> Confirm & Upload Results
                 </button>

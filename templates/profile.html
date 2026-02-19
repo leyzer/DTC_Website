@@ -49,6 +49,7 @@ Profile
                     <div class="mb-3">
                         <label for="admin-select" class="form-label">Manage User Roles</label>
                         <form method="post" action="{{ url_for('main.profile') }}" id="adminForm">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="input-group mb-2">
                                 <select name="admin" id="admin-select" class="form-select" required>
                                     <option value="" disabled selected>Select user...</option>
