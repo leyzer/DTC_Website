@@ -104,7 +104,19 @@ def season(year):
     except Exception as e:
         logger.error(f"Database error in season: {str(e)}")
         return None
-    
+
+def all_seasons():
+    """Return all active and archived seasons ordered by year descending."""
+    try:
+        with sqlite3.connect('GPTLeague.db') as connection:
+            connection.row_factory = sqlite3.Row
+            cursor = connection.cursor()
+            return cursor.execute(
+                "SELECT year FROM seasons WHERE status IN ('active','archived') ORDER BY year DESC"
+            ).fetchall()
+    except Exception as e:
+        logger.error(f"Database error in all_seasons: {str(e)}")
+        return []
 
 def check_account(username, password):
     """Verify username/password against `users.hash` in GPTLeague.db.

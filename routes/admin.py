@@ -126,12 +126,12 @@ def manage_system_memberships(system_id):
         system_name = system_row["system_name"]
 
         players = cursor.execute("""
-            SELECT p.player_id, p.player_name,
+            SELECT p.user_id, p.full_name,
                    COALESCE(sm.is_active, 0) AS is_active
-            FROM players p
+            FROM users p
             LEFT JOIN system_memberships sm
-            ON sm.player_id = p.player_id AND sm.system_id = ?
-            ORDER BY p.player_name
+            ON sm.user_id = p.user_id AND sm.system_id = ?
+            ORDER BY p.full_name
         """, (system_id,)).fetchall()
 
     return render_template("manageSystemMemberships.html",
@@ -178,9 +178,9 @@ def update_system_memberships(system_id):
         for (uid,) in all_users:
             is_active = 1 if str(uid) in members else 0
             cursor.execute("""
-                INSERT INTO system_memberships (player_id, system_id, is_active, joined_on)
+                INSERT INTO system_memberships (user_id, system_id, is_active, joined_on)
                 VALUES (?, ?, ?, datetime('now'))
-                ON CONFLICT(player_id, system_id) DO UPDATE SET is_active = excluded.is_active
+                ON CONFLICT(user_id, system_id) DO UPDATE SET is_active = excluded.is_active
             """, (uid, system_id, is_active))
 
         conn.commit()
@@ -251,7 +251,7 @@ def admin_system_memberships(system_id):
                    COALESCE(sm.is_active, 0) AS is_active
             FROM users u
             LEFT JOIN system_memberships sm
-            ON sm.player_id = u.user_id AND sm.system_id = ?
+            ON sm.user_id = u.user_id AND sm.system_id = ?
             ORDER BY u.full_name
         """, (system_id,)).fetchall()
 

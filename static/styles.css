@@ -1214,7 +1214,7 @@ html.dark-mode .membership-card:hover {
 }
 
 html.dark-mode .player-name {
-    color: var(--card-bg);
+    color: var(--text-primary);
 }
 
 html.dark-mode #playerSearch {

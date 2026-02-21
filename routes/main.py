@@ -80,7 +80,7 @@ def elo_ratings():
                     JOIN ratings r ON u.user_id = r.player_id
                     JOIN seasons s ON r.season_id = s.season_id
                     LEFT JOIN system_memberships sm 
-                        ON sm.player_id = r.player_id AND sm.system_id = r.system_id
+                        ON sm.user_id = r.player_id AND sm.system_id = r.system_id
                     LEFT JOIN club_memberships cm 
                         ON cm.user_id = u.user_id AND cm.season_id = s.season_id
                     WHERE s.year = ? AND r.system_id = ? AND sm.is_active = 1
@@ -227,8 +227,10 @@ def contact():
 @main_bp.route("/sample_batch_upload.csv")
 def download_sample_csv():
     """Download sample CSV file for batch upload."""
+    import os
+    sample_file = os.path.join(os.path.dirname(__file__), '..', 'sample_batch_upload.csv')
     return send_file(
-        "sample_batch_upload.csv",
+        sample_file,
         as_attachment=True,
         download_name="sample_batch_upload.csv",
         mimetype="text/csv"

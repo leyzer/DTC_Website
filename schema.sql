@@ -164,12 +164,12 @@ CREATE TABLE IF NOT EXISTS systems (
 -- Dumping structure for table GPTLeague.system_memberships
 CREATE TABLE IF NOT EXISTS system_memberships (
     membership_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    player_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     system_id INTEGER NOT NULL,
     joined_on TEXT DEFAULT (datetime('now')),
     is_active INTEGER DEFAULT 1,
-    UNIQUE(player_id, system_id),
-    FOREIGN KEY (player_id) REFERENCES players(player_id),
+    UNIQUE(user_id, system_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (system_id) REFERENCES systems(system_id)
 );
 
