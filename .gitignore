@@ -42,6 +42,7 @@ prod/
 
 # Database
 *.db
+*.backup
 GPTLeague.db
 *.sqlite
 *.sqlite3

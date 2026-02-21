@@ -1246,4 +1246,58 @@ html.dark-mode #playerSearch:focus {
         box-shadow: none;
         border: 1px solid #ccc;
     }
+
+    /* Accordion styling - override Bootstrap defaults */
+    .accordion-button {
+        color: #333 !important;
+        background-color: white !important;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #333 !important;
+        background-color: #f5f5f5 !important;
+        box-shadow: none !important;
+    }
+
+    .accordion-body {
+        background-color: white !important;
+        color: #333 !important;
+    }
+
+    .accordion-body * {
+        color: #333 !important;
+    }
+
+    /* Dark mode accordion styling */
+    html.dark-mode .accordion {
+        --bs-accordion-bg: var(--card-bg) !important;
+        --bs-accordion-border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    html.dark-mode .accordion-button {
+        background-color: var(--card-bg) !important;
+        color: #e0e0e0 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    html.dark-mode .accordion-button:not(.collapsed) {
+        background-color: rgba(100, 100, 100, 0.3) !important;
+        color: #e0e0e0 !important;
+        box-shadow: none !important;
+    }
+
+    /* Dark mode accordion styling */
+    html.dark-mode .accordion-body {
+        background-color: var(--card-bg) !important;
+        color: #e0e0e0 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    html.dark-mode .accordion-body[style*="color"] {
+        color: #e0e0e0 !important;
+    }
+
+    html.dark-mode .accordion-body * {
+        color: #e0e0e0 !important;
+    }
 }

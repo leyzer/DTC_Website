@@ -1,0 +1,118 @@
+faction_id,system_id,faction_name
+1,1,Cities of Sigmar
+2,1,Daughters of Khaine
+3,1,Fyreslayers
+4,1,Idoneth Deepkin
+5,1,Kharadron Overlords
+6,1,Lumineth Realm-Lords
+7,1,Seraphon
+8,1,Stormcast Eternals
+9,1,Sylvaneth
+10,1,Flesh-eater Courts
+11,1,Nighthaunt
+12,1,Ossiarch Bonereapers
+13,1,Soulblight Gravelords
+14,1,Blades of Khorne
+15,1,Disciples of Tzeentch
+16,1,Hedonites of Slaanesh
+17,1,Helsmiths of Hashut
+18,1,Maggotkin of Nurgle
+19,1,Skaven
+20,1,Slaves to Darkness
+21,1,Gloomspite Gitz
+22,1,Ogor Mawtribes
+23,1,Orruk Warclans
+24,1,Sons of Behemat
+25,2,Space Marines
+26,2,Black Templars
+27,2,Blood Angels
+28,2,Dark Angels
+29,2,Deathwatch
+30,2,Grey Knights
+31,2,Imperial Fists
+32,2,Iron Hands
+33,2,Raven Guard
+34,2,Salamanders
+35,2,Space Wolves
+36,2,Ultramarines
+37,2,White Scars
+38,2,Adepta Sororitas
+39,2,Adeptus Custodes
+40,2,Adeptus Mechanicus
+41,2,Astra Militarum
+42,2,Imperial Agents
+43,2,Imperial Knights
+44,2,Chaos Daemons
+45,2,Chaos Knights
+46,2,Chaos Space Marines
+47,2,Death Guard
+48,2,Emperor's Children
+49,2,Thousand Sons
+50,2,World Eaters
+51,2,Aeldari
+52,2,Drukhari
+53,2,Genestealer Cults
+54,2,Leagues of Votann
+55,2,Necrons
+56,2,Orks
+57,2,Tau Empire
+58,2,Tyranids
+59,3,Black Orc
+60,3,Chaos Chosen
+61,3,Chaos Dwarf
+62,3,Chaos Renegade
+63,3,Dark Elf
+64,3,Dwarf
+65,3,Elven Union
+66,3,Gnome
+67,3,Goblin
+68,3,Halfling
+69,3,High Elf
+70,3,Human
+71,3,Imperial Nobility
+72,3,Khorne
+73,3,Lizardmen
+74,3,Necromantic Horror
+75,3,Norse
+76,3,Nurgle
+77,3,Ogre
+78,3,Old World Alliance
+79,3,Orc
+80,3,Shambling Undead
+81,3,Skaven
+82,3,Snotling
+83,3,Tomb Kings
+84,3,Underworld Denizens
+85,3,Vampire
+86,3,Wood Elf
+87,10,Dark Angels
+88,10,Emperor's Children
+89,10,Iron Warriors
+90,10,White Scars
+91,10,Space Wolves
+92,10,Imperial Fists
+93,10,Night Lords
+94,10,Blood Angels
+95,10,Iron Hands
+96,10,World Eaters
+97,10,Ultramarines
+98,10,Death Guard
+99,10,Thousand Sons
+100,10,Sons of Horus
+101,10,Word Bearers
+102,10,Salamanders
+103,10,Raven Guard
+104,10,Alpha Legion
+105,4,Imperium
+106,4,Chaos
+107,4,Xenos
+108,9,Empire of Man
+109,9,Kingdom of Bretonnia
+110,9,Dwarfen Mountain Holds
+111,9,Grand Cathay
+112,9,High Elf Realms
+113,9,Wood Elf Realms
+114,9,Beastmen Brayherds
+115,9,Warriors of Chaos
+116,9,Orc and Goblin Tribes
+117,9,Tomb Kings of Khemri

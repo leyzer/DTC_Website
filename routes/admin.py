@@ -2,9 +2,11 @@
 import sqlite3
 import csv
 import io
+import string
+import secrets
 from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from helpers import is_admin, login_required, CURRENT_YEAR, season
+from helpers import is_admin, login_required, CURRENT_YEAR, season, hash_password, is_valid_email
 from ratings import update_ratings_for_season
 
 admin_bp = Blueprint('admin', __name__)
@@ -755,3 +757,228 @@ def batch_upload_confirm():
         flash(f"Error processing batch upload: {str(e)}", "danger")
 
     return redirect(url_for("admin.batch_upload"))
+
+
+def generate_temp_password(length=12):
+    """Generate a temporary password with uppercase, lowercase, numbers, and symbols."""
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(characters) for _ in range(length))
+
+
+@admin_bp.route("/batch_upload_users", methods=["GET", "POST"])
+@login_required
+def batch_upload_users():
+    """Batch upload users from CSV."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to access this page.", "danger")
+        return redirect("/")
+
+    preview_data = None
+
+    if request.method == "POST":
+        if "file" not in request.files:
+            flash("No file selected", "warning")
+            return redirect(url_for("admin.batch_upload_users"))
+
+        file = request.files["file"]
+        if file.filename == "":
+            flash("No file selected", "warning")
+            return redirect(url_for("admin.batch_upload_users"))
+
+        if not file.filename.endswith(".csv"):
+            flash("Please upload a CSV file", "warning")
+            return redirect(url_for("admin.batch_upload_users"))
+
+        try:
+            stream = io.StringIO(file.stream.read().decode("utf-8"), newline=None)
+            csv_data = list(csv.DictReader(stream))
+            
+            if not csv_data:
+                flash("CSV file is empty", "warning")
+                return redirect(url_for("admin.batch_upload_users"))
+
+            # Required columns
+            if csv_data and csv_data[0]:
+                required = {"username", "email", "full_name"}
+                if not required.issubset(set(csv_data[0].keys())):
+                    flash(f"CSV missing required columns. Required: {', '.join(required)}", "warning")
+                    return redirect(url_for("admin.batch_upload_users"))
+
+            # Get existing usernames and emails
+            with sqlite3.connect("GPTLeague.db") as conn:
+                cursor = conn.cursor()
+                existing_usernames = set(
+                    row[0] for row in cursor.execute("SELECT user_name FROM users").fetchall()
+                )
+                existing_emails = set(
+                    row[0] for row in cursor.execute("SELECT email FROM users").fetchall()
+                )
+
+            preview_data = []
+            for idx, row in enumerate(csv_data, 1):
+                preview_row = {"row": idx, "errors": []}
+
+                # Validate username
+                username = row.get("username", "").strip()
+                if not username:
+                    preview_row["errors"].append("Username is required")
+                elif len(username) < 3:
+                    preview_row["errors"].append("Username must be at least 3 characters")
+                elif not all(c.isalnum() or c == '_' for c in username):
+                    preview_row["errors"].append("Username can only contain letters, numbers, and underscores")
+                elif username in existing_usernames:
+                    preview_row["errors"].append(f"Username '{username}' already exists")
+                else:
+                    preview_row["username"] = username
+
+                # Validate email
+                email = row.get("email", "").strip()
+                if not email:
+                    preview_row["errors"].append("Email is required")
+                elif not is_valid_email(email):
+                    preview_row["errors"].append("Invalid email format")
+                elif email in existing_emails:
+                    preview_row["errors"].append(f"Email '{email}' already exists")
+                else:
+                    preview_row["email"] = email
+
+                # Validate full name
+                full_name = row.get("full_name", "").strip()
+                if not full_name:
+                    preview_row["errors"].append("Full name is required")
+                elif len(full_name) < 2:
+                    preview_row["errors"].append("Full name must be at least 2 characters")
+                else:
+                    preview_row["full_name"] = full_name
+
+                preview_data.append(preview_row)
+
+            # Store preview data in session for confirmation
+            session["batch_upload_users_preview"] = preview_data
+            session["batch_upload_users_csv_data"] = csv_data
+            session.modified = True
+            
+        except Exception as e:
+            flash(f"Error reading CSV: {str(e)}", "danger")
+            return redirect(url_for("admin.batch_upload_users"))
+
+    return render_template("batch_upload_users.html", preview_data=preview_data)
+
+
+@admin_bp.route("/batch_upload_users_confirm", methods=["POST"])
+@login_required
+def batch_upload_users_confirm():
+    """Confirm and insert batch uploaded users."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to perform this action.", "danger")
+        return redirect("/")
+
+    try:
+        # Get data from session
+        csv_data = session.get("batch_upload_users_csv_data", [])
+        preview_data = session.get("batch_upload_users_preview", [])
+        
+        if not csv_data or not preview_data:
+            flash("No preview data found. Please upload a file again.", "warning")
+            return redirect(url_for("admin.batch_upload_users"))
+
+        with sqlite3.connect("GPTLeague.db") as conn:
+            cursor = conn.cursor()
+
+            # Get current season
+            year = CURRENT_YEAR()
+            season_row = cursor.execute(
+                "SELECT season_id FROM seasons WHERE year = ?", (year,)
+            ).fetchone()
+            season_id = season_row[0] if season_row else 1
+
+            users_added = 0
+            temp_passwords = []
+
+            for idx, (preview_row, csv_row) in enumerate(zip(preview_data, csv_data)):
+                if preview_row.get("errors"):
+                    continue  # Skip rows with errors
+
+                try:
+                    username = preview_row.get("username")
+                    email = preview_row.get("email")
+                    full_name = preview_row.get("full_name")
+                    
+                    # Generate temporary password
+                    temp_password = generate_temp_password()
+                    password_hash = hash_password(temp_password)
+                    
+                    # Insert user
+                    cursor.execute(
+                        "INSERT INTO users (user_name, email, full_name, password_hash, is_active) VALUES (?,?,?,?,?)",
+                        (username, email, full_name, password_hash, 1)
+                    )
+                    new_user_id = cursor.lastrowid
+                    
+                    # Add as player role
+                    cursor.execute(
+                        "INSERT INTO user_roles (user_id, role) VALUES (?,?)",
+                        (new_user_id, 'player')
+                    )
+                    
+                    # Auto-enroll in current season
+                    cursor.execute(
+                        "INSERT INTO club_memberships (season_id, user_id, is_member) VALUES (?,?,?)",
+                        (season_id, new_user_id, 1)
+                    )
+                    
+                    # Store temp password for display
+                    temp_passwords.append({
+                        "username": username,
+                        "email": email,
+                        "full_name": full_name,
+                        "temp_password": temp_password
+                    })
+                    
+                    users_added += 1
+
+                except Exception as e:
+                    flash(f"Row {idx + 1}: {str(e)}", "warning")
+                    conn.rollback()
+                    continue
+
+            conn.commit()
+
+            # Clear session data
+            session.pop("batch_upload_users_preview", None)
+            session.pop("batch_upload_users_csv_data", None)
+            session.modified = True
+
+            if users_added > 0:
+                flash(f"✅ Successfully added {users_added} user(s)", "success")
+                # Store temp passwords in session to display
+                session["batch_upload_temp_passwords"] = temp_passwords
+                session.modified = True
+                return redirect(url_for("admin.batch_upload_users_complete"))
+            else:
+                flash("No valid users to add", "warning")
+                return redirect(url_for("admin.batch_upload_users"))
+
+    except Exception as e:
+        flash(f"Error processing batch upload: {str(e)}", "danger")
+        return redirect(url_for("admin.batch_upload_users"))
+
+
+@admin_bp.route("/batch_upload_users_complete")
+@login_required
+def batch_upload_users_complete():
+    """Display temporary passwords for newly created users."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to access this page.", "danger")
+        return redirect("/")
+
+    temp_passwords = session.pop("batch_upload_temp_passwords", [])
+    
+    if not temp_passwords:
+        flash("No temp passwords to display", "warning")
+        return redirect(url_for("admin.batch_upload_users"))
+
+    return render_template("batch_upload_users_complete.html", users=temp_passwords)

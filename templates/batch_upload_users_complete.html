@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+{% block title %}Users Created Successfully{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">✅ Users Created Successfully</h4>
+        <p>{{ users|length }} new user(s) have been created and enrolled in the current season.</p>
+        <hr>
+        <p class="mb-0">Please save the temporary passwords below, as they will not be displayed again.</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <!-- Copy Instructions -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">📋 Next Steps</h5>
+        </div>
+        <div class="card-body">
+            <ol>
+                <li>Copy the table below or the individual credentials</li>
+                <li>Send the credentials securely to the new users</li>
+                <li>Users should change their password on first login</li>
+                <li><strong>Do not store these passwords anywhere</strong></li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Credentials Table -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">👥 New User Credentials ({{ users|length }} users)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Temporary Password</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td><code>{{ user.username }}</code></td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.full_name }}</td>
+                            <td>
+                                <code class="user-password" data-password="{{ user.temp_password }}">••••••••</code>
+                                <button class="btn btn-sm btn-outline-secondary toggle-password ms-2" type="button" data-index="{{ loop.index0 }}">
+                                    Show
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary copy-password ms-2" type="button" data-text="{{ user.username }}:{{ user.temp_password }}">
+                                    Copy
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-secondary copy-row" type="button" data-text="{{ user.username }},{{ user.email }},{{ user.full_name }},{{ user.temp_password }}">
+                                    Copy Row
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual Credentials Cards -->
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">📧 Send individually to each user</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for user in users %}
+                <div class="col-md-6 mb-3">
+                    <div class="border p-3 rounded">
+                        <p><strong>To:</strong> {{ user.full_name }} ({{ user.email }})</p>
+                        <p class="mb-2"><strong>Username:</strong> <code>{{ user.username }}</code></p>
+                        <p class="mb-2"><strong>Temporary Password:</strong> <code class="select-text">{{ user.temp_password }}</code></p>
+                        <small class="text-muted">Please change your password after first login.</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-4 d-flex gap-2">
+        <a href="{{ url_for('admin.batch_upload_users') }}" class="btn btn-primary">Add More Users</a>
+        <a href="{{ url_for('admin.manage_memberships') }}" class="btn btn-secondary">Manage Memberships</a>
+        <a href="/" class="btn btn-outline-secondary">Return Home</a>
+    </div>
+</div>
+
+<style>
+    .select-text {
+        user-select: all;
+        cursor: copy;
+    }
+    code {
+        background-color: #f5f5f5;
+        padding: 4px 8px;
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+</style>
+
+<script>
+// Toggle password visibility
+document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const index = this.dataset.index;
+        const passwordEl = document.querySelectorAll('.user-password')[index];
+        const password = passwordEl.dataset.password;
+        
+        if (passwordEl.textContent === '••••••••') {
+            passwordEl.textContent = password;
+            this.textContent = 'Hide';
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-outline-warning');
+        } else {
+            passwordEl.textContent = '••••••••';
+            this.textContent = 'Show';
+            this.classList.remove('btn-outline-warning');
+            this.classList.add('btn-outline-secondary');
+        }
+    });
+});
+
+// Copy to clipboard
+document.querySelectorAll('.copy-password, .copy-row').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const text = this.dataset.text;
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = this.textContent;
+            this.textContent = '✓ Copied';
+            this.classList.add('btn-success');
+            this.classList.remove('btn-outline-primary', 'btn-outline-secondary');
+            
+            setTimeout(() => {
+                this.textContent = originalText;
+                this.classList.remove('btn-success');
+                this.classList.add('btn-outline-primary');
+            }, 2000);
+        });
+    });
+});
+</script>
+{% endblock %}

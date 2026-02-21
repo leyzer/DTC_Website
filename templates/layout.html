@@ -91,6 +91,7 @@
                                         <li><a class="dropdown-item" href="{{ url_for('admin.manage_users') }}">Manage Users</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('admin.admin_memberships_dashboard') }}">Manage Memberships</a></li>
                                         <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ url_for('admin.batch_upload_users') }}">Batch Add Users</a></li>
                                         <li><a class="dropdown-item" href="{{ url_for('admin.batch_upload') }}">Batch Upload Results</a></li>
                                     </ul>
                                 </li>
@@ -204,6 +205,9 @@
                     {% elif request.path.startswith('/admin/manage_users') %}
                         <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
                         <li class="breadcrumb-item active">Manage Users</li>
+                    {% elif request.path.startswith('/admin/batch_upload_users') %}
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
+                        <li class="breadcrumb-item active">Batch Add Users</li>
                     {% elif request.path.startswith('/admin/batch_upload') %}
                         <li class="breadcrumb-item"><a href="{{ url_for('admin.admin_memberships_dashboard') }}">Admin Dashboard</a></li>
                         <li class="breadcrumb-item active">Batch Upload Results</li>
@@ -238,8 +242,8 @@
                 const themeIcon = document.querySelector('.theme-icon');
                 const htmlElement = document.documentElement;
 
-                // Check localStorage for dark mode preference
-                const isDarkMode = localStorage.getItem('darkMode') === 'enabled';
+                // Check localStorage for dark mode preference (default to dark mode)
+                const isDarkMode = localStorage.getItem('darkMode') !== 'disabled';
 
                 // Apply saved preference on page load
                 if (isDarkMode) {

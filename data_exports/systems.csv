@@ -1,0 +1,13 @@
+system_id,system_code,system_name,category
+1,AOS,Age of Sigmar,AOS
+2,40K,"Warhammer 40,000",40k
+3,BB,Blood Bowl,skirmish
+4,KT,Kill Team,skirmish
+5,TC,Titanicus/Commander,skirmish
+6,VW,Verrotwood,skirmish
+7,SCABZ,Scabz,skirmish
+8,SG,Stargrave,skirmish
+9,OLD,Old Hammer,mass_battle
+10,HH,Horus Heresy,mass_battle
+11,OW,Oathmark/Old World,mass_battle
+12,HIST,Historical,mass_battle

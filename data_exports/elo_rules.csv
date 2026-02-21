@@ -1,0 +1,11 @@
+elo_rule_id,category,points_band,base_rating,k_factor
+1,AOS,SP/CP,400,16
+2,AOS,1000,400,24
+3,AOS,1500,400,24
+4,AOS,2000,400,32
+5,40k,SP/CP,400,16
+6,40k,1000,400,24
+7,40k,1500,400,24
+8,40k,2000,400,32
+9,skirmish,skirmish,400,24
+10,mass_battle,mass_battle,400,24
