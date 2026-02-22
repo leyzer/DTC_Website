@@ -39,7 +39,15 @@ def login():
             return apology("An error occurred during login", 400)
 
     else:
-        return render_template("login.html")
+        # Get user count for conditional registration visibility
+        try:
+            with sqlite3.connect('GPTLeague.db') as connection:
+                cursor = connection.cursor()
+                user_count = cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        except:
+            user_count = 0
+        
+        return render_template("login.html", user_count=user_count)
 
 
 @auth_bp.route("/logout")
@@ -51,6 +59,21 @@ def logout():
 
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
+    try:
+        with sqlite3.connect('GPTLeague.db') as connection:
+            cursor = connection.cursor()
+            user_count = cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+        
+        # Only allow registration if no users exist
+        if user_count > 0:
+            flash("User registration is closed. Please contact an administrator.", "warning")
+            return redirect(url_for('auth.login'))
+    
+    except Exception as e:
+        logger.error(f"Error checking user count: {str(e)}")
+        flash("An error occurred", "danger")
+        return redirect(url_for('auth.login'))
+    
     if request.method == "POST":
         try:
             username = request.form.get("username", "").lower().strip()
@@ -119,7 +142,7 @@ def register():
             flash('An error occurred during registration', 'danger')
             return redirect(url_for('auth.register'))
     else:
-        return render_template("register.html")
+        return render_template("register.html", user_count=user_count)
 
 
 @auth_bp.route("/reset_password", methods=["GET", "POST"])

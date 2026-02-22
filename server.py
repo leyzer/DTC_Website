@@ -59,6 +59,17 @@ def inject_current_user():
     return dict(current_user=None)
 
 
+def inject_user_count():
+    """Inject total user count for registration visibility."""
+    try:
+        with sqlite3.connect("GPTLeague.db") as conn:
+            cursor = conn.cursor()
+            user_count = cursor.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+            return dict(user_count=user_count)
+    except:
+        return dict(user_count=0)
+
+
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
@@ -74,6 +85,7 @@ def create_app():
     # Register context processors
     app.context_processor(inject_systems)
     app.context_processor(inject_current_user)
+    app.context_processor(inject_user_count)
     
     # Register after_request handler
     @app.after_request

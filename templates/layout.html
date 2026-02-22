@@ -142,7 +142,9 @@
                                     <span class="theme-icon">🌙</span>
                                 </button>
                             </li>
-                            <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                            {% if user_count == 0 %}
+                                <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+                            {% endif %}
                             <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
                         </ul>
                     {% endif %}
@@ -219,7 +221,7 @@
                         <li class="breadcrumb-item active">Contact Us</li>
                     {% elif request.path.startswith('/login') %}
                         <li class="breadcrumb-item active">Log In</li>
-                    {% elif request.path.startswith('/register') %}
+                    {% elif request.path.startswith('/register') and user_count == 0 %}
                         <li class="breadcrumb-item active">Register</li>
                     {% endif %}
                 </ol>

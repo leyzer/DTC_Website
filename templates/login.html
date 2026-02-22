@@ -24,7 +24,14 @@
 					<hr>
 
 					<div class="text-center small">
-						<p class="mb-2">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+						{% if user_count == 0 %}
+							<div class="alert alert-success mb-3">
+								<strong>Welcome!</strong> No users exist yet. Please register below to create the first account.
+							</div>
+							<p class="mb-2"><a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-sm">Register Account</a></p>
+						{% else %}
+							<p class="mb-2">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+						{% endif %}
 						<p class="mb-0">Admin created an account for you? <a href="{{ url_for('auth.claim_account') }}">Claim it here</a></p>
 					</div>
 					<div class="alert alert-info mt-3 mb-0">

@@ -8,11 +8,24 @@
 <div class="container">
     <div class="row justify-content-center mt-5">
         <div class="col-md-5">
+            {% if user_count > 0 %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Registration Closed</strong>
+                <p class="mb-0">User registration is currently restricted. If you would like to have an account, please contact an administrator.</p>
+            </div>
+            {% endif %}
+            
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Create Account</h4>
                 </div>
                 <div class="card-body p-4">
+                    {% if user_count == 0 %}
+                    <div class="alert alert-info mb-3" role="alert">
+                        <small>Welcome! Create the first admin account for your league.</small>
+                    </div>
+                    {% endif %}
+                    
                     <form action="{{ url_for('auth.register') }}" method="post">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
@@ -30,13 +43,13 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
                             <input class="form-control" id="password" name="password" placeholder="••••••••" type="password" required>
-                            <small class="form-text text-muted">At least 6 characters</small>
+                            <small class="form-text text-muted">At least 8 characters, with uppercase, lowercase, and numbers</small>
                         </div>
                         <div class="mb-4">
                             <label for="confirmation" class="form-label">Confirm Password</label>
                             <input class="form-control" id="confirmation" name="confirmation" placeholder="••••••••" type="password" required>
                         </div>
-                        <button class="btn btn-primary w-100 mb-3" type="submit">Register</button>
+                        <button class="btn btn-primary w-100 mb-3" type="submit" {% if user_count > 0 %}disabled{% endif %}>Register</button>
                         
                         <div class="text-center small">
                             Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>
