@@ -1,6 +1,58 @@
 CS50 final project
 
 # Warhammer 40k League
+
+## AWS EC2 — Resetting the Database
+
+Use this procedure when you want to wipe all player/game data and start fresh on your EC2 instance. Reference data (systems, factions, seasons, locations, Elo rules, league settings) is automatically preserved via CSV files in `data_exports/` and reloaded after the reset.
+
+### Prerequisites
+
+```bash
+# Install Python dependencies (only needed once)
+pip install flask flask_session bcrypt plotly
+```
+
+### One-command reset
+
+```bash
+# SSH into your EC2 instance, then cd to the project root
+cd /path/to/DTC_Website
+
+# Run the reset script (replace 'dtc-league' with your systemd service name)
+./reset_db.sh --service dtc-league
+```
+
+The script will:
+1. **Stop** the web service so the database file is not locked.
+2. **Back up** the existing `GPTLeague.db` (timestamped).
+3. **Delete** the old database and create a fresh one from `schema.sql`.
+4. **Reimport** reference data from `data_exports/*.csv`.
+5. **Restart** the web service.
+
+### Manual steps (if you prefer)
+
+```bash
+# 1. Stop the Flask app
+sudo systemctl stop dtc-league      # or: pkill gunicorn / pkill python3
+
+# 2. (Optional) Back up the current database
+cp GPTLeague.db GPTLeague.db.backup
+
+# 3. Reset the database
+python3 init_db.py
+
+# 4. Restart the Flask app
+sudo systemctl start dtc-league     # or: gunicorn --bind 0.0.0.0:8000 server:app
+```
+
+### After resetting
+
+- All **users, games, ratings and results** are deleted.
+- **Reference data** (systems, factions, Elo rules, locations, seasons, league settings) is restored from `data_exports/`.
+- Register the first admin account, then log in and grant yourself the `admin` role via the profile page.
+
+---
 #### Video Demo:  <URL https://youtu.be/r7avI54Kof4>
 #### Description:
 <h3>general overview:</h3>

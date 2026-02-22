@@ -187,6 +187,20 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table GPTLeague.league_settings
+CREATE TABLE IF NOT EXISTS league_settings (
+    setting_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    season_id INTEGER,
+    setting_key TEXT NOT NULL,
+    setting_value TEXT NOT NULL,
+    description TEXT,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(season_id, setting_key),
+    FOREIGN KEY(season_id) REFERENCES seasons(season_id)
+);
+
+-- Data exporting was unselected.
+
 -- Dumping structure for table GPTLeague.user_roles
 CREATE TABLE IF NOT EXISTS user_roles (
     user_id            INTEGER NOT NULL,
