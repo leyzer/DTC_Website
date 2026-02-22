@@ -143,6 +143,30 @@ def profile():
                 from helpers import is_admin
                 is_user_admin = is_admin(user_id)
                 
+                # Get armies (factions) played by user
+                armies_played = cursor.execute("""
+                    SELECT f.faction_name, s.system_name, COUNT(*) as game_count
+                    FROM game_participants gp
+                    JOIN factions f ON gp.faction_id = f.faction_id
+                    JOIN games g ON gp.game_id = g.game_id
+                    JOIN systems s ON g.system_id = s.system_id
+                    WHERE gp.player_id = ?
+                    GROUP BY f.faction_id, s.system_id
+                    ORDER BY s.system_name, game_count DESC
+                """, (user_id,)).fetchall()
+                
+                # Get favorite store (most played location)
+                favorite_store = cursor.execute("""
+                    SELECT l.name, l.city, COUNT(*) as game_count
+                    FROM games g
+                    JOIN game_participants gp ON g.game_id = gp.game_id
+                    JOIN locations l ON g.location_id = l.location_id
+                    WHERE gp.player_id = ?
+                    GROUP BY g.location_id
+                    ORDER BY game_count DESC
+                    LIMIT 1
+                """, (user_id,)).fetchone()
+                
                 # Get all users for admin dropdown (if user is admin)
                 users_list = []
                 if is_user_admin:
@@ -160,6 +184,8 @@ def profile():
                                        user=user, 
                                        users_list=users_list, 
                                        is_user_admin=is_user_admin,
+                                       armies_played=armies_played,
+                                       favorite_store=favorite_store,
                                        CURRENT_YEAR=year)
             else:
                 from helpers import is_admin

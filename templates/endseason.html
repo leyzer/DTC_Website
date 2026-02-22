@@ -5,15 +5,52 @@
 {% endblock %}
 
 {% block main %}
-<form action="/endseason" method="post">
-	<h3>Confirm end of Season</h3>
-	<div class="mb-3">
-		<input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+<div class="container mt-5">
+	<div class="row justify-content-center">
+		<div class="col-md-6">
+			<h2 class="text-danger mb-4">End Season - Admin Only</h2>
+			
+			<div class="alert alert-danger" role="alert">
+				<h4>⚠️ This action cannot be undone</h4>
+				<p class="mb-0">You are about to create a new season in the system.</p>
+			</div>
+			
+			{% if current_year and next_year %}
+			<div class="card mb-4">
+				<div class="card-body">
+					<h5 class="card-title">Season Details</h5>
+					<p class="mb-2">
+						<strong>Current Season:</strong> 
+						<span class="badge bg-secondary">{{ current_year }}</span>
+					</p>
+					<p class="mb-0">
+						<strong>New Season:</strong> 
+						<span class="badge bg-primary">{{ next_year }}</span>
+					</p>
+					<hr>
+					<p class="text-muted small mb-0">
+						New season {{ next_year }} will start on {{ next_year }}-02-01 and end on {{ next_year }}-12-31
+					</p>
+				</div>
+			</div>
+			{% endif %}
+			
+			<form action="/endseason" method="post">
+				<div class="mb-3">
+					<div class="form-check">
+						<input class="form-check-input" type="checkbox" id="confirm" name="confirm" value="yes" required>
+						<label class="form-check-label" for="confirm">
+							I understand this will create a new season for {{ next_year }}
+						</label>
+					</div>
+				</div>
+				
+				<div class="d-grid gap-2">
+					<button class="btn btn-danger" type="submit">Confirm - End Season {{ current_year }}</button>
+					<a href="/profile" class="btn btn-secondary">Cancel</a>
+				</div>
+			</form>
+		</div>
 	</div>
-	<div class="mb-3">
-		<input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="password" name="password" placeholder="password" type="text">
-	</div>
-    <input type="checkbox" value="endseason" name="endseason">
-	<button class="btn btn-secondary" type="submit">Confirm End Season</button>
-</form>
+</div>
 {% endblock %}

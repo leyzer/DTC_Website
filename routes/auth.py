@@ -4,7 +4,7 @@ import secrets
 import logging
 from datetime import datetime, timedelta
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
-from helpers import apology, hash_password, check_password, check_account, CURRENT_YEAR, validate_password_strength
+from helpers import apology, hash_password, check_password, check_account, CURRENT_YEAR, validate_password_strength, is_admin
 
 logger = logging.getLogger(__name__)
 
@@ -189,31 +189,36 @@ def endseason():
     @login_required
     def _endseason_handler():
         try:
+            # Check if user is admin
+            user_id = session.get("user_id")
+            if not is_admin(user_id):
+                return apology("Admin access required", 403)
+            
+            current_year = CURRENT_YEAR()
+            next_year = current_year + 1
+            
             if request.method == "GET":  
-                return render_template("endseason.html") 
+                return render_template("endseason.html", current_year=current_year, next_year=next_year) 
             else:
-                username = request.form.get("username", "")
-                password = request.form.get("password", "")
-                endseason = request.form.get("endseason")
-
-                if not username:
-                    return apology("username required", 200)
-                elif not password:
-                    return apology("must provide password", 400)
-               
-                if check_account(username, password) == False:
-                    return apology("incorrect username or password", 400)
+                # POST request - actually end the season
+                confirm = request.form.get("confirm")
                 
-                if endseason:
-                    with sqlite3.connect('GPTLeague.db') as connection:
-                        cursor = connection.cursor()
-                        year = CURRENT_YEAR()
-                        year += 1
-                        start = f"{year}-01-01"  
-                        end = f"{year}-12-31"
-                        cursor.execute("INSERT INTO seasons (name, year, start_date, end_date) VALUES (?,?,?,?)", (f"{year} League", year, start, end))
-                        connection.commit()
-                        logger.info(f"New season {year} created")
+                if not confirm:
+                    return apology("You must confirm to end the season", 400)
+                
+                with sqlite3.connect('GPTLeague.db') as connection:
+                    cursor = connection.cursor()
+                    
+                    # Archive the current season
+                    cursor.execute("UPDATE seasons SET status = 'archived' WHERE year = ?", (current_year,))
+                    
+                    # Create the new season
+                    start = f"{next_year}-02-01 00:00:00"  
+                    end = f"{next_year}-12-31 23:59:59"
+                    cursor.execute("INSERT INTO seasons (name, year, start_date, end_date, status) VALUES (?,?,?,?,'active')", (f"Season {next_year}", next_year, start, end))
+                    connection.commit()
+                    logger.info(f"Season {current_year} archived and new season {next_year} created by admin {user_id}")
+                    flash(f'Season {current_year} archived. New season {next_year} has been created.', 'success')
                 
                 return redirect("/profile")
         except Exception as e:

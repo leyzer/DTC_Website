@@ -78,9 +78,47 @@
                     </table>
                 </div>
             </div>
+
+            <!-- Admin Functions Card -->
+            <div class="card mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">⚙️ Admin Functions</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">Current Season: <strong>{{ CURRENT_YEAR }}</strong></p>
+                    
+                    <div class="mb-3">
+                        <label for="admin-select" class="form-label">Manage User Roles</label>
+                        <form method="post" action="{{ url_for('main.profile') }}" id="adminForm">
+                            <div class="input-group mb-2">
+                                <select name="admin" id="admin-select" class="form-select" required>
+                                    <option value="" disabled selected>Select user...</option>
+                                    {% for u in users_list %}
+                                        <option value="{{ u.user_id }}" {% if u.is_admin %}style="color: #28a745; font-weight: bold;"{% endif %}>
+                                            {{ u.user_name }} ({{ u.full_name }})
+                                            {% if u.is_admin %}✓ Admin{% endif %}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-warning w-100" onclick="return confirm('Change admin status for this user?')">
+                                Toggle Admin Rights
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <a href="{{ url_for('main.home') }}?year={{ CURRENT_YEAR }}" class="btn btn-sm btn-secondary w-100 mb-2">
+                        View Current Season
+                    </a>
+                    <a href="{{ url_for('auth.endseason') }}" class="btn btn-sm btn-danger w-100">
+                        End Season
+                    </a>
+                </div>
+            </div>
         </div>
 
-        <!-- Info Sidebar -->
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header bg-info text-white">
