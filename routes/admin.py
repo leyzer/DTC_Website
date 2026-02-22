@@ -4,8 +4,10 @@ import csv
 import io
 import string
 import secrets
+import zipfile
+import shutil
 from datetime import datetime
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for, send_file
 from helpers import is_admin, login_required, CURRENT_YEAR, season, hash_password, is_valid_email
 from ratings import update_ratings_for_season
 
@@ -982,3 +984,182 @@ def batch_upload_users_complete():
         return redirect(url_for("admin.batch_upload_users"))
 
     return render_template("batch_upload_users_complete.html", users=temp_passwords)
+
+
+@admin_bp.route("/export_data", methods=["GET", "POST"])
+@login_required
+def export_data():
+    """Export database as SQL dump or CSV files in a ZIP archive."""
+    user_id = session["user_id"]
+    if not is_admin(user_id):
+        flash("You do not have permission to access this page.", "danger")
+        return redirect("/")
+    
+    if request.method == "GET":
+        return render_template("export_data.html")
+    
+    # POST - perform export
+    export_format = request.form.get("export_format")
+    
+    if export_format == "sql":
+        return _export_sql_dump(user_id)
+    elif export_format == "csv":
+        return _export_csv_zip(user_id)
+    else:
+        flash("Invalid export format", "danger")
+        return redirect(url_for("admin.export_data"))
+
+
+def _export_sql_dump(user_id):
+    """Export entire database as SQL dump in a ZIP file."""
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        zip_filename = f"dtc_league_backup_sql_{timestamp}.zip"
+        
+        # Create in-memory zip file
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            # Read SQLite database
+            with sqlite3.connect("GPTLeague.db") as conn:
+                cursor = conn.cursor()
+                
+                # Get SQL dump from sqlite3
+                sql_dump = "\n".join(conn.iterdump())
+                
+                # Add schema info
+                schema_info = f"""-- DTC Warhammer 40k League Database Backup
+-- Exported: {datetime.now().isoformat()}
+-- Format: SQL (SQLite)
+-- Use: sqlite3 new_database.db < backup.sql
+
+{sql_dump}
+"""
+                
+                # Add to zip
+                zip_file.writestr(f"dtc_league_dump_{timestamp}.sql", schema_info)
+                
+                # Also add a README
+                readme = f"""DTC Warhammer 40k League - Database Backup
+
+Backup Date: {datetime.now().isoformat()}
+Format: SQL Dump (SQLite)
+
+RESTORE INSTRUCTIONS:
+1. Create a new SQLite database: sqlite3 GPTLeague.db
+2. Import the dump: sqlite3 GPTLeague.db < dtc_league_dump_{timestamp}.sql
+3. Verify the import was successful
+
+CONTENTS:
+- Complete database schema
+- All user data
+- All game results and ratings
+- All season and league settings
+
+Backup size represents a point-in-time snapshot.
+"""
+                zip_file.writestr("README.txt", readme)
+        
+        zip_buffer.seek(0)
+        
+        logger.info(f"Database SQL backup created by admin {user_id}")
+        return send_file(
+            zip_buffer,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=zip_filename
+        )
+    
+    except Exception as e:
+        logger.error(f"Error exporting SQL dump: {str(e)}")
+        flash(f"Error creating SQL dump: {str(e)}", "danger")
+        return redirect(url_for("admin.export_data"))
+
+
+def _export_csv_zip(user_id):
+    """Export all tables as CSV files in a ZIP archive."""
+    try:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        zip_filename = f"dtc_league_backup_csv_{timestamp}.zip"
+        
+        # Create in-memory zip file
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            with sqlite3.connect("GPTLeague.db") as conn:
+                conn.row_factory = sqlite3.Row
+                cursor = conn.cursor()
+                
+                # Get all table names
+                tables = cursor.execute(
+                    "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
+                ).fetchall()
+                
+                for table in tables:
+                    table_name = table["name"]
+                    
+                    # Skip internal sqlite tables
+                    if table_name.startswith("sqlite_"):
+                        continue
+                    
+                    try:
+                        # Get all rows from table
+                        rows = cursor.execute(f"SELECT * FROM {table_name}").fetchall()
+                        
+                        if rows:
+                            # Create CSV in memory
+                            csv_buffer = io.StringIO()
+                            csv_writer = csv.writer(csv_buffer)
+                            
+                            # Write header
+                            headers = [description[0] for description in cursor.description]
+                            csv_writer.writerow(headers)
+                            
+                            # Write data rows
+                            for row in rows:
+                                csv_writer.writerow([row[col] for col in headers])
+                            
+                            # Add to zip
+                            csv_content = csv_buffer.getvalue()
+                            zip_file.writestr(f"{table_name}.csv", csv_content)
+                    
+                    except Exception as e:
+                        logger.warning(f"Error exporting table {table_name}: {str(e)}")
+                        continue
+                
+                # Add README
+                readme = f"""DTC Warhammer 40k League - Database Backup
+
+Backup Date: {datetime.now().isoformat()}
+Format: CSV Files (comma-separated values)
+
+CONTENTS:
+{chr(10).join([f"- {table['name']}.csv" for table in tables if not table['name'].startswith('sqlite_')])}
+
+USAGE:
+- Open CSV files in Excel, Google Sheets, or any spreadsheet application
+- Each file represents one database table
+- Headers show column names
+- Useful for data analysis, reporting, and manual review
+
+RESTORE (Advanced):
+- You can import these CSVs back into a database
+- Ensure you maintain referential integrity when importing
+- System admin accounts (is_system_only=1) should be handled carefully
+"""
+                zip_file.writestr("README.txt", readme)
+        
+        zip_buffer.seek(0)
+        
+        logger.info(f"Database CSV backup created by admin {user_id}")
+        return send_file(
+            zip_buffer,
+            mimetype='application/zip',
+            as_attachment=True,
+            download_name=zip_filename
+        )
+    
+    except Exception as e:
+        logger.error(f"Error exporting CSV files: {str(e)}")
+        flash(f"Error creating CSV export: {str(e)}", "danger")
+        return redirect(url_for("admin.export_data"))

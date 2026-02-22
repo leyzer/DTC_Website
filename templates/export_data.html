@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}Export Database{% endblock %}
+
+{% block main %}
+    <div class="container mt-5" style="max-width: 600px;">
+        <h2 class="mb-4">Export League Database</h2>
+        
+        <div class="alert alert-info" role="alert">
+            <strong>Backup your data:</strong> Export the entire database for safekeeping or server migration.
+        </div>
+        
+        <form method="POST" class="needs-validation">
+            <div class="mb-4">
+                <label for="export_format" class="form-label"><strong>Export Format:</strong></label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="export_format" id="format_sql" value="sql" checked>
+                    <label class="form-check-label" for="format_sql">
+                        <strong>SQL Dump</strong>
+                        <div class="ms-4 text-muted small">
+                            Complete database snapshot as SQL statements<br>
+                            <em>Best for: Complete backup and restore, server migration</em>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="radio" name="export_format" id="format_csv" value="csv">
+                    <label class="form-check-label" for="format_csv">
+                        <strong>CSV Files</strong>
+                        <div class="ms-4 text-muted small">
+                            Individual CSV file for each table<br>
+                            <em>Best for: Data analysis, Excel review, manual inspection</em>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="alert alert-warning" role="alert">
+                <small>
+                    <strong>Note:</strong> System admin accounts (is_system_only=1) are included in exports.<br>
+                    Keep backup files secure and in a safe location.
+                </small>
+            </div>
+            
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-download"></i> Download Backup
+                </button>
+                <a href="/" class="btn btn-outline-secondary btn-lg">Cancel</a>
+            </div>
+        </form>
+        
+        <div class="mt-5 p-4 bg-light rounded">
+            <h5>About Exports:</h5>
+            <ul class="small">
+                <li><strong>SQL Format:</strong> Complete SQLite database dump. Can be restored to recreate exact database state.</li>
+                <li><strong>CSV Format:</strong> Human-readable spreadsheet files. Good for review and analysis.</li>
+                <li><strong>ZIP Archive:</strong> Both formats are compressed for easy download and storage.</li>
+                <li><strong>Filename:</strong> Includes timestamp for version control.</li>
+                <li><strong>README:</strong> Instructions included with each backup.</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
